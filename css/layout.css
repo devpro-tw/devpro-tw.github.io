@@ -1,0 +1,528 @@
+﻿/* ---reset.css--- */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+*{
+	margin:0;
+	padding:0;
+	/* box-sizing 解放的padiding*/
+	-webkit-box-sizing:border-box;
+	box-sizing:border-box;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* ---reset.css--- */
+@font-face
+{
+	font-family: avgr65w;
+	src: url('../avgr65w.ttf');
+}
+html, body{
+	font-family:Arial, Helvetica,"微軟正黑體" sans-serif;
+	-webkit-text-size-adjust:none;
+	background-color:#373737;
+	background:url(../images/bg.jpg) no-repeat;
+	background-position: top center;
+	background-attachment: scroll;
+	background-size:cover;
+}
+/* --電腦版型------------------------------------- */
+
+#WRAPPER{
+}
+
+
+#TOP{
+	width:1020px;
+	height:122px;
+	margin:0 auto;
+	position:relative;
+	background:url(../images/menubg.png) no-repeat 0 0;
+	overflow:hidden;
+}
+#TOP ul{
+	float:left;
+	padding-left:15px;
+}
+
+#TOP li{
+	float:left;
+}
+.B{font-size:24px;}
+
+#TOP li a{
+font-family: 'avgr65w', sans-serif;
+letter-spacing:1px;
+	display:block;
+	width:270px;
+	height:162px;
+	background-image:url(../images/icons.png);
+	background-repeat:no-repeat;
+	padding:40px 0 0 110px;
+	text-align:left;
+	text-decoration:none;
+	color:#fff;
+	font-size:1em;
+	font-weight:bold;
+	background-size:40%;
+}
+
+#TOP li a:hover{
+	background-color:#287723;
+	border-right:1px #3baa34 dashed;
+	border-left:1px #3baa34 dashed;
+}
+
+
+#TOP li#AA a{
+	background-position:20px 20px;
+}
+
+#TOP li#BB a{
+	background-position:13px -90px;
+}
+
+#TOP li#CC a{
+	background-position:20px -220px;
+}
+#TOPMENU{display:block; position: absolute; z-index:0; top:15px; right:70px; width:100px; height:300px;}
+#TOPMENU #ca a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px 5px; background-size:13%; width:350px; height:40px; padding:15px 0 0 50px; line-height:25px;}
+#TOPMENU #cb a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px -60px; background-size:13%; width:350px; height:38px; padding:10px 0 0 50px; line-height:28px;}
+#TOPMENU a{ color:#FFF; font-size:13px; text-decoration:none; font-family: 'avgr65w', sans-serif;}
+#TOPMENU a:hover{
+	color:#000;
+}
+
+#CONTENT-1{
+	width:1020px;
+	height:1060px;
+	margin:0 auto;
+	padding:15% 0 0 8%;
+}
+#CONTENT-1 .IMGA{float:left; height:270px; padding:80px 0 0 0;}
+#CONTENT-1 .iconA {background:url(../images/icon1.png) no-repeat; width:350px; height:270px; float:left; background-size:100%;}
+
+#CONTENT-1 .titleA{
+font-family: 'avgr65w', sans-serif;
+	font-size:40px; line-height:70px;
+	color:#40b039;
+	letter-spacing:3px;
+	text-shadow:  -1px 1px 2px #196c14,
+			 	  -1px 1px 2px #196c14,
+				  -1px 1px 2px #196c14;
+								
+}
+#CONTENT-1 .titleB{
+font-family: 'avgr65w', sans-serif;
+	font-size:25px; line-height:30px; color:#aab4a9;
+	letter-spacing:2px;
+	text-shadow:  -1px 1px 2px #858b84,
+				  -1px 1px 2px #858b84,
+}
+
+/*第二menu*/
+#TOP_2{
+	width:1020px;
+	height:122px;
+	margin:0 auto;
+	position:relative;
+	background:url(../images/menubg_2.png) no-repeat 0 0;
+	overflow:hidden;
+	padding:0px;
+}
+#TOP_2 ul{
+	float:left;
+	padding-left:15px;
+}
+
+#TOP_2 li{
+	float:left;
+}
+.B{font-size:24px;}
+
+#TOP_2 li a{
+font-family: 'avgr65w', sans-serif;
+letter-spacing:1px;
+	display:block;
+	width:270px;
+	height:162px;
+	background-image:url(../images/icons.png);
+	background-repeat:no-repeat;
+	padding:40px 0 0 110px;
+	text-align:left;
+	text-decoration:none;
+	color:#fff;
+	font-size:1em;
+	font-weight:bold;
+	background-size:40%;
+}
+
+#TOP_2 li a:hover{
+	background-color:#195f15;
+	border-right:1px #3baa34 dashed;
+	border-left:1px #3baa34 dashed;
+}
+
+#TOP_2 li:first-child a{
+	background-color:#256a21;
+	border-right:1px #3baa34 dashed;
+	border-left:1px #3baa34 dashed;
+}
+
+#TOP_2 li#AA a{
+	background-position:20px 20px;
+}
+
+#TOP_2 li#BB a{
+	background-position:13px -90px;
+}
+
+#TOP_2 li#CC a{
+	background-position:20px -220px;
+}
+#TOPMENU_2{display:block; position: absolute; z-index:0; top:15px; right:70px; width:100px; height:300px;}
+#TOPMENU_2 #ca a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px 5px; background-size:13%; width:350px; height:40px; padding:15px 0 0 50px; line-height:25px;}
+#TOPMENU_2 #cb a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px -60px; background-size:13%; width:350px; height:38px; padding:10px 0 0 50px; line-height:28px;}
+#TOPMENU_2 a{ color:#FFF; font-size:13px; text-decoration:none; font-family: 'avgr65w', sans-serif;}
+#TOPMENU_2 a:hover{
+	color:#000;
+}
+/*第二內容*/
+#CONTENT-2{
+	width:1020px;
+	height:1030px;
+	margin:0 auto;
+	padding:10% 0 0 0;
+}
+#CONTENT-2 .iconA {background:url(../images/icon2.png) no-repeat; width:350px; height:270px; float:left; background-size:100%;}
+#CONTENT-2 .IMGA{float:left; width:600px; padding:20px 0 0 0;}
+#CONTENT-2 .titleA{
+font-family: 'avgr65w', sans-serif;
+	font-size:40px; line-height:70px;
+	color:#fff;
+	letter-spacing:0px;
+	text-shadow:  -1px 1px 2px #196c14,
+			 	  -1px 1px 2px #196c14,
+				  -1px 1px 2px #196c14;
+								
+}
+#CONTENT-2 .titleA span{font-size:24px;}
+#CONTENT-2 .titleB{
+font-family: 'avgr65w', sans-serif;
+	font-size:18px; line-height:30px; color:#fff;
+	letter-spacing:2px;
+}
+/*第三menu*/
+#TOP_3{
+	width:1020px;
+	height:122px;
+	margin:0 auto;
+	position:relative;
+	background:url(../images/menubg_3.png) no-repeat 0 0;
+	overflow:hidden;
+}
+#TOP_3 ul{
+	float:left;
+	padding-left:15px;
+}
+
+#TOP_3 li{
+	float:left;
+}
+.B{font-size:24px;}
+
+#TOP_3 li a{
+font-family: 'avgr65w', sans-serif;
+letter-spacing:1px;
+	display:block;
+	width:270px;
+	height:162px;
+	background-image:url(../images/icons.png);
+	background-repeat:no-repeat;
+	padding:40px 0 0 110px;
+	text-align:left;
+	text-decoration:none;
+	color:#fff;
+	font-size:1em;
+	font-weight:bold;
+	background-size:40%;
+}
+
+#TOP_3 li a:hover{
+	background-color:#004647;
+	border-right:1px #00696b dashed;
+	border-left:1px #00696b dashed;
+}
+
+#TOP_3 li.hover{
+	background-color:#005456;
+	border-right:1px #00696b dashed;
+	border-left:1px #00696b dashed;
+}
+
+#TOP_3 li#AA a{
+	background-position:20px 20px;
+}
+
+#TOP_3 li#BB a{
+	background-position:13px -90px;
+}
+
+#TOP_3 li#CC a{
+	background-position:20px -220px;
+}
+#TOPMENU_3{display:block; position: absolute; z-index:0; top:15px; right:70px; width:100px; height:300px;}
+#TOPMENU_3 #ca a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px 5px; background-size:13%; width:350px; height:40px; padding:15px 0 0 50px; line-height:25px;}
+#TOPMENU_3 #cb a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px -60px; background-size:13%; width:350px; height:38px; padding:10px 0 0 50px; line-height:28px;}
+#TOPMENU_3 a{ color:#FFF; font-size:13px; text-decoration:none; font-family: 'avgr65w', sans-serif;}
+#TOPMENU_3 a:hover{
+	color:#000;
+}
+
+/*第三內容*/
+#CONTENT-3{
+	width:1020px;
+	height:1010px;
+	margin:0 auto;
+	padding:10% 0 0 0;
+}
+#CONTENT-3 .iconA {background:url(../images/icon3.png) no-repeat; width:350px; height:270px; float:right; background-size:80%; background-position:50px 50px; margin-right:80px;}
+#CONTENT-3 .IMGA{float:left; width:550px; padding:20px 0 0 60px;}
+#CONTENT-3 .titleA{
+font-family: 'avgr65w', sans-serif;
+	font-size:50px; line-height:70px;
+	color:#000;
+	letter-spacing:0px;
+}
+#CONTENT-3 .titleA span{font-size:24px;}
+#CONTENT-3 .titleB{
+font-family: 'avgr65w', sans-serif;
+	font-size:18px; line-height:30px; color:#000;
+	letter-spacing:2px;
+	font-weight:bold;
+}
+
+
+/*第四menu*/
+#TOP_4{
+	width:1020px;
+	height:122px;
+	margin:0 auto;
+	position:relative;
+	background:url(../images/menubg_4.png) no-repeat 0 0;
+	overflow:hidden;
+}
+#TOP_4 ul{
+	float:left;
+	padding-left:15px;
+}
+
+#TOP_4 li{
+	float:left;
+}
+.B{font-size:24px;}
+
+#TOP_4 li a{
+font-family: 'avgr65w', sans-serif;
+letter-spacing:1px;
+	display:block;
+	width:270px;
+	height:162px;
+	background-image:url(../images/icons.png);
+	background-repeat:no-repeat;
+	padding:40px 0 0 110px;
+	text-align:left;
+	text-decoration:none;
+	color:#fff;
+	font-size:1em;
+	font-weight:bold;
+	background-size:40%;
+}
+
+#TOP_4 li a:hover{
+	background-color:#776201;
+	border-right:1px #9c8000 dashed;
+	border-left:1px #9c8000 dashed;
+}
+
+#TOP_4 li.hover{
+	background-color:#816a04;
+	border-right:1px #9c8000 dashed;
+	border-left:1px #9c8000 dashed;
+}
+
+#TOP_4 li#AA a{
+	background-position:20px 20px;
+}
+
+#TOP_4 li#BB a{
+	background-position:13px -90px;
+}
+
+#TOP_4 li#CC a{
+	background-position:20px -220px;
+}
+#TOPMENU_4{display:block; position: absolute; z-index:0; top:15px; right:70px; width:100px; height:300px;}
+#TOPMENU_4 #ca a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px 5px; background-size:13%; width:350px; height:40px; padding:15px 0 0 50px; line-height:25px;}
+#TOPMENU_4 #cb a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px -60px; background-size:13%; width:350px; height:38px; padding:10px 0 0 50px; line-height:28px;}
+#TOPMENU_4 a{ color:#FFF; font-size:13px; text-decoration:none; font-family: 'avgr65w', sans-serif;}
+#TOPMENU_4 a:hover{
+	color:#000;
+}
+
+/*第四內容*/
+#CONTENT-4{
+	width:1020px;
+	height:1020px;
+	margin:0 auto;
+	padding:5% 0 0 0;
+}
+#CONTENT-4 .iconA {background:url(../images/icon4.png) no-repeat; width:250px; height:250px; background-size:100%; margin:0 auto;}
+#CONTENT-4 .IMGA{ width:800px; margin:0 auto;}
+#CONTENT-4 .titleA{
+font-family: 'avgr65w', sans-serif;
+	font-size:50px; line-height:70px;
+	color:#fff;
+	letter-spacing:0px;
+	text-align:center;
+}
+#CONTENT-4 .titleA span{font-size:24px;}
+#CONTENT-4 .titleB{
+	text-align:center;
+font-family: 'avgr65w', sans-serif;
+	font-size:18px; line-height:30px; color:#fff;
+	letter-spacing:2px;
+	font-weight:bold;
+}
+/*第五menu*/
+#TOP_5{
+	width:1020px;
+	height:122px;
+	margin:0 auto;
+	position:relative;
+	background:url(../images/menubg_5.png) no-repeat 0 0;
+	overflow:hidden;
+}
+#TOP_5 ul{
+	float:left;
+	padding-left:15px;
+}
+
+#TOP_5 li{
+	float:left;
+}
+.B{font-size:24px;}
+
+#TOP_5 li a{
+font-family: 'avgr65w', sans-serif;
+letter-spacing:1px;
+	display:block;
+	width:270px;
+	height:162px;
+	background-image:url(../images/icons.png);
+	background-repeat:no-repeat;
+	padding:40px 0 0 110px;
+	text-align:left;
+	text-decoration:none;
+	color:#fff;
+	font-size:1em;
+	font-weight:bold;
+	background-size:40%;
+}
+
+#TOP_5 li a:hover{
+	background-color:#3a3a3a;
+	border-right:1px #161616 dashed;
+	border-left:1px #161616 dashed;
+}
+
+#TOP_5 li.hover{
+	background-color:#3a3a3a;
+	border-right:1px #161616 dashed;
+	border-left:1px #161616 dashed;
+}
+
+#TOP_5 li#AA a{
+	background-position:20px 20px;
+}
+
+#TOP_5 li#BB a{
+	background-position:13px -90px;
+}
+
+#TOP_5 li#CC a{
+	background-position:20px -220px;
+}
+#TOPMENU_5{display:block; position: absolute; z-index:0; top:15px; right:70px; width:100px; height:300px;}
+#TOPMENU_5 #ca a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px 5px; background-size:13%; width:350px; height:40px; padding:15px 0 0 50px; line-height:25px;}
+#TOPMENU_5 #cb a{display:block; background:url(../images/icons2.png) no-repeat; background-position:0px -60px; background-size:13%; width:350px; height:38px; padding:10px 0 0 50px; line-height:28px;}
+#TOPMENU_5 a{ color:#FFF; font-size:13px; text-decoration:none; font-family: 'avgr65w', sans-serif;}
+#TOPMENU_5 a:hover{
+	color:#a1a1a1;
+}
+
+/*第五內容*/
+#CONTENT-5{
+	width:1020px;
+	height:960px;
+	margin:0 auto;
+	padding:3% 0 0 0;
+}
+#CONTENT-5 .iconA {background:url(../images/icon5.png) no-repeat; width:350px; height:270px; background-size:70%; background-position:60px 60px; margin:0 auto;}
+#CONTENT-5 .IMGA{ width:800px; margin:0 auto;}
+#CONTENT-5 .titleA{
+font-family: 'avgr65w', sans-serif;
+	font-size:50px; line-height:60px;
+	color:#fff;
+	letter-spacing:0px;
+	text-align:center;
+}
+#CONTENT-5 .titleA span{font-size:24px;}
+#CONTENT-5 .titleB{
+	padding-top:30px;
+	font-family: 'avgr65w', sans-serif;
+	font-size:18px; line-height:30px; color:#fff;
+	letter-spacing:2px;
+	font-weight:bold;
+}
+.email_Word{color:#FFF; font-size:30px; line-height:50px; height:50px; margin-bottom:20px; margin-left:80px;}
+input{ height:50px; background-color:#999999; color:#333333; font-size:24px; border:1px #333333 solid; }
+textarea{ background-color:#999999; color:#333333; font-size:24px; border:1px #333333 solid; }
