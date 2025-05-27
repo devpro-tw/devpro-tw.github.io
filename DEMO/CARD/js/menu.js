@@ -218,9 +218,9 @@ const InstallmentSystem = {
     }
 };
 
-// 添加寬度調整功能
-document.addEventListener('DOMContentLoaded', function() {
-    const resizer = document.getElementById('dragMe');
+// 添加選單寬度調整功能
+function initializeResizer() {
+    const resizer = document.querySelector('.resizer');
     const sidebar = document.querySelector('.sidebar');
     
     let isResizing = false;
@@ -238,15 +238,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const delta = e.clientX - lastDownX;
         const newWidth = sidebar.offsetWidth + delta;
         
-        if (newWidth >= 150 && newWidth <= 500) {
+        if (newWidth >= 150 && newWidth <= 400) {
             sidebar.style.width = `${newWidth}px`;
-            sidebar.style.flexBasis = `${newWidth}px`;
             lastDownX = e.clientX;
         }
     });
     
     document.addEventListener('mouseup', () => {
         isResizing = false;
-        document.body.style.cursor = 'default';
+        document.body.style.cursor = '';
     });
-});
+}
+
+document.addEventListener('DOMContentLoaded', initializeResizer);

@@ -39,11 +39,24 @@
     border-radius: 3px;
 }
 
+/* Resizer */
+.resizer {
+    width: 5px;
+    cursor: col-resize;
+    background: rgba(0, 0, 0, 0.1);
+    transition: background 0.3s;
+}
+
+.resizer:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
 /* Sidebar */
 .sidebar {
     background-color: #34495e;
+    min-width: 150px;
+    max-width: 400px;
     width: 180px;
-    min-height: calc(100vh - 50px);
     color: white;
     transition: width 0.3s;
     flex-shrink: 0;
@@ -112,6 +125,13 @@
 
 .menu-text {
     font-size: 13px;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
 }
 
 /* Main Content */
