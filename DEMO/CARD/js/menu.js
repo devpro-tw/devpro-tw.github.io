@@ -69,167 +69,33 @@ function updateMenuActive(pageId) {
 }
 
 // 載入刷卡紀錄查詢頁面
-function loadTransactionRecords(container) {
-    container.innerHTML = `
-        <div class="container">
-            <h1>刷卡紀錄</h1>
-            
-            <div class="button-row" style="text-align: right; margin-bottom: 20px;">
-                <button onclick="TransactionRecords.querySPDH()">SPDH-以卡號查詢</button>
-                <button onclick="TransactionRecords.queryOAAA()">OAAA</button>
-                <button onclick="TransactionRecords.querySPDH2()">SPDH</button>
-            </div>
-            
-            <!-- 基本資料區 -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label>主卡ID</label>
-                    <input type="text" id="custNumber" />
-                </div>
-                <div class="form-group">
-                    <label>附卡ID</label>
-                    <input type="text" id="altCustNbr" />
-                </div>
-                <div class="form-group">
-                    <label></label>
-                    <span></span>
-                </div>
-                <div class="form-group">
-                    <label></label>
-                    <span></span>
-                </div>
-            </div>
-            
-            <!-- 帳單資訊 -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label>結帳日期</label>
-                    <input type="text" id="billDate" />
-                </div>
-                <div class="form-group">
-                    <label>總應繳款</label>
-                    <input type="text" id="totalPayment" />
-                </div>
-                <div class="form-group">
-                    <label>本期最低應繳</label>
-                    <input type="text" id="minPayment" />
-                </div>
-                <div class="form-group">
-                    <label>繳款評等</label>
-                    <input type="text" id="paymentRating" />
-                </div>
-            </div>
-            
-            <!-- 更多表單欄位... (節省空間，實際應包含完整表單) -->
-            
-            <!-- 消費明細 Grid -->
-            <div class="section-title" style="font-weight: bold; margin-top: 20px;">消費明細 OAAA</div>
-            <div class="grid-container" style="max-height: 220px;">
-                <table id="oaaaGrid">
-                    <thead>
-                        <tr>
-                            <th>行動裝置</th>
-                            <th>卡號</th>
-                            <th>交易日期</th>
-                            <th>交易時間</th>
-                            <th>交易金額</th>
-                            <th>REQUEST</th>
-                            <th>行業別</th>
-                            <th>國碼</th>
-                            <th>BIN ICA</th>
-                            <th>RESPONSE</th>
-                            <th>REV CODE</th>
-                            <th>ECREQ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- 動態資料 -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-
-    // 初始化頁面功能
-    TransactionRecords.init();
+async function loadTransactionRecords(container) {
+    try {
+        const response = await fetch('/DEMO/CARD/pages/transaction-records.html');
+        const html = await response.text();
+        container.innerHTML = html;
+        
+        // 初始化頁面功能
+        TransactionRecords.init();
+    } catch (error) {
+        console.error('載入交易紀錄頁面失敗:', error);
+        Utils.showError('載入頁面失敗');
+    }
 }
 
 // 載入分期作業頁面
-function loadInstallmentSystem(container) {
-    container.innerHTML = `
-        <div class="container">
-            <h1>分期作業</h1>
-            
-            <!-- Tab Control -->
-            <div class="tabs" style="display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px;">
-                <div class="tab active" onclick="InstallmentSystem.switchTab(0)" style="padding: 8px 20px; cursor: pointer; background-color: white; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">申請分期</div>
-                <div class="tab" onclick="InstallmentSystem.switchTab(1)" style="padding: 8px 20px; cursor: pointer; background-color: #f5f5f5; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">已授權未請款交易</div>
-                <div class="tab" onclick="InstallmentSystem.switchTab(2)" style="padding: 8px 20px; cursor: pointer; background-color: #f5f5f5; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">已請款未結帳交易</div>
-                <div class="tab" onclick="InstallmentSystem.switchTab(3)" style="padding: 8px 20px; cursor: pointer; background-color: #f5f5f5; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">已請款已結帳交易</div>
-            </div>
-            
-            <!-- Tab Content -->
-            <div id="tab-content-0" class="tab-content active">
-                <!-- 已授權未請款交易 -->
-                <div class="section-header" style="font-weight: bold; margin: 15px 0 10px 0;">
-                    已授權未請款交易
-                    <button onclick="InstallmentSystem.applySingleInstallment()">單筆分期</button>
-                    <button style="color: maroon; font-weight: bold;" onclick="InstallmentSystem.calculate(1)">試算</button>
-                </div>
-                <div class="grid-container" style="max-height: 120px;">
-                    <table id="grid1">
-                        <thead>
-                            <tr>
-                                <th>SEL</th>
-                                <th>ID</th>
-                                <th>期數</th>
-                                <th>卡號</th>
-                                <th>TYPE</th>
-                                <th>刷卡金額</th>
-                                <th>交易日期</th>
-                                <th>交易時間</th>
-                                <th>交易金額</th>
-                                <th>授權碼</th>
-                                <th>行業別</th>
-                                <th>Merch No</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- 動態資料 -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- 更多 Grid... (節省空間) -->
-                
-                <div class="action-buttons" style="text-align: center; margin-top: 20px;">
-                    <button class="primary" onclick="InstallmentSystem.applyInstallment()">申請分期</button>
-                    <button onclick="InstallmentSystem.reselect()">重新選擇</button>
-                </div>
-            </div>
-            
-            <div id="tab-content-1" class="tab-content" style="display: none;">
-                <div style="height: 450px; background-color: #fafafa; display: flex; align-items: center; justify-content: center;">
-                    <p>已授權未請款交易報表</p>
-                </div>
-            </div>
-            
-            <div id="tab-content-2" class="tab-content" style="display: none;">
-                <div style="height: 450px; background-color: #fafafa; display: flex; align-items: center; justify-content: center;">
-                    <p>已請款未結帳交易報表</p>
-                </div>
-            </div>
-            
-            <div id="tab-content-3" class="tab-content" style="display: none;">
-                <div style="height: 450px; background-color: #fafafa; display: flex; align-items: center; justify-content: center;">
-                    <p>已請款已結帳交易報表</p>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // 初始化頁面功能
-    InstallmentSystem.init();
+async function loadInstallmentSystem(container) {
+    try {
+        const response = await fetch('/DEMO/CARD/pages/installment-system.html');
+        const html = await response.text();
+        container.innerHTML = html;
+        
+        // 初始化頁面功能
+        InstallmentSystem.init();
+    } catch (error) {
+        console.error('載入分期作業頁面失敗:', error);
+        Utils.showError('載入頁面失敗');
+    }
 }
 
 // 刷卡紀錄查詢頁面功能

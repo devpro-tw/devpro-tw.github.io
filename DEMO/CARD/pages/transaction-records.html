@@ -1,0 +1,75 @@
+<div class="container">
+    <h1>刷卡紀錄</h1>
+    
+    <div class="button-row" style="text-align: right; margin-bottom: 20px;">
+        <button onclick="TransactionRecords.querySPDH()">SPDH-以卡號查詢</button>
+        <button onclick="TransactionRecords.queryOAAA()">OAAA</button>
+        <button onclick="TransactionRecords.querySPDH2()">SPDH</button>
+    </div>
+    
+    <!-- 基本資料區 -->
+    <div class="form-row">
+        <div class="form-group">
+            <label>主卡ID</label>
+            <input type="text" id="custNumber" />
+        </div>
+        <div class="form-group">
+            <label>附卡ID</label>
+            <input type="text" id="altCustNbr" />
+        </div>
+        <div class="form-group">
+            <label></label>
+            <span></span>
+        </div>
+        <div class="form-group">
+            <label></label>
+            <span></span>
+        </div>
+    </div>
+    
+    <!-- 帳單資訊 -->
+    <div class="form-row">
+        <div class="form-group">
+            <label>結帳日期</label>
+            <input type="text" id="billDate" />
+        </div>
+        <div class="form-group">
+            <label>總應繳款</label>
+            <input type="text" id="totalPayment" />
+        </div>
+        <div class="form-group">
+            <label>本期最低應繳</label>
+            <input type="text" id="minPayment" />
+        </div>
+        <div class="form-group">
+            <label>繳款評等</label>
+            <input type="text" id="paymentRating" />
+        </div>
+    </div>
+    
+    <!-- 消費明細 Grid -->
+    <div class="section-title" style="font-weight: bold; margin-top: 20px;">消費明細 OAAA</div>
+    <div class="grid-container" style="max-height: 220px;">
+        <table id="oaaaGrid">
+            <thead>
+                <tr>
+                    <th>行動裝置</th>
+                    <th>卡號</th>
+                    <th>交易日期</th>
+                    <th>交易時間</th>
+                    <th>交易金額</th>
+                    <th>REQUEST</th>
+                    <th>行業別</th>
+                    <th>國碼</th>
+                    <th>BIN ICA</th>
+                    <th>RESPONSE</th>
+                    <th>REV CODE</th>
+                    <th>ECREQ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 動態資料 -->
+            </tbody>
+        </table>
+    </div>
+</div>
