@@ -11,6 +11,21 @@ const PAGES = {
         title: '分期作業',
         url: 'pages/installment-system.html',
         breadcrumb: ['首頁', '交易管理', '分期作業']
+    },
+    'F1_1': {
+        title: '身份確認查詢',
+        url: 'pages/F1_1.html',
+        breadcrumb: ['首頁', '交易管理', '身份確認查詢']
+    },
+    'F1_2': {
+        title: '特店查詢',
+        url: 'pages/F1_2.html',
+        breadcrumb: ['首頁', '交易管理', '特店查詢']
+    },
+    'F1_3': {
+        title: '信用卡查詢',
+        url: 'pages/F1_3.html',
+        breadcrumb: ['首頁', '交易管理', '信用卡查詢']
     }
 };
 
