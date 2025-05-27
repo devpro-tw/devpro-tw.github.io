@@ -121,7 +121,8 @@
     flex-direction: column;
     background-color: #ecf0f1;
     margin-left: 180px;
-    transition: margin-left 0.3s;
+    padding: 0;
+    margin-right: 0;
 }
 
 /* Breadcrumb */
@@ -131,6 +132,7 @@
     border-bottom: 1px solid #ddd;
     font-size: 12px;
     color: #7f8c8d;
+    margin: 0;
 }
 
 .breadcrumb span {
@@ -145,8 +147,19 @@
 /* Content Area */
 .content-area {
     flex: 1;
-    padding: 20px;
-    overflow: auto;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+#content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: block;
 }
 
 /* Welcome Page */
