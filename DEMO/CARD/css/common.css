@@ -34,7 +34,6 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    min-height: 100vh;
 }
 
 .navbar {
@@ -44,15 +43,14 @@ body {
 .content-wrapper {
     display: flex;
     flex: 1;
-    min-height: 0;
-    position: relative;
+    overflow: hidden;
 }
 
 .sidebar {
-    flex: 0 0 250px;
-    overflow-y: auto;
+    width: 250px;
     background-color: #f5f5f5;
     border-right: 1px solid #ddd;
+    transition: width 0.3s ease;
 }
 
 .main-content {
@@ -60,8 +58,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    min-width: 0;
-    margin-left: 0; /* 移除可能造成空白的 margin */
 }
 
 .breadcrumb {
@@ -74,18 +70,13 @@ body {
 .content-area {
     flex: 1;
     overflow: hidden;
-    padding: 0;
-    background-color: #fff;
-    margin: 0; /* 移除可能造成空白的 margin */
+    background: #fff;
 }
 
-/* Content Frame */
 #content-frame {
     width: 100%;
     height: 100%;
     border: none;
-    display: block;
-    background: #fff;
 }
 
 /* Typography */
@@ -341,41 +332,12 @@ tr.selected {
 
 @media (max-width: 768px) {
     .sidebar {
-        flex: 0 0 200px;
-    }
-    
-    .main-content {
-        margin-left: 200px;
-        width: calc(100% - 200px);
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-group,
-    .form-group.col-span-2,
-    .form-group.col-span-3,
-    .form-group.col-span-4 {
-        grid-column: span 1;
-    }
-    
-    .form-group {
-        grid-template-columns: 100px 1fr;
-    }
-    
-    label {
-        text-align: left;
+        width: 200px;
     }
 }
 
 @media (max-width: 576px) {
     .sidebar {
-        flex: 0 0 180px;
-    }
-    
-    .main-content {
-        margin-left: 180px;
-        width: calc(100% - 180px);
+        width: 180px;
     }
 }
