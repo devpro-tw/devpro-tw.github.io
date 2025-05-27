@@ -1,0 +1,272 @@
+/* menu.css - 選單樣式 */
+
+/* Main Layout */
+.main-container {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand h1 {
+    font-size: 18px;
+    margin: 0;
+    color: white;
+}
+
+.navbar-info {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+}
+
+.user-info {
+    padding: 5px 10px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #34495e;
+    width: 250px;
+    min-height: calc(100vh - 50px);
+    color: white;
+    transition: width 0.3s;
+    flex-shrink: 0;
+}
+
+.menu {
+    padding: 20px 0;
+}
+
+.menu-section {
+    margin-bottom: 20px;
+}
+
+.menu-title {
+    font-size: 11px;
+    color: #95a5a6;
+    text-transform: uppercase;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.menu-list {
+    list-style: none;
+}
+
+.menu-item {
+    margin-bottom: 2px;
+}
+
+.menu-item a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.menu-item a:hover {
+    background-color: #2c3e50;
+    padding-left: 25px;
+}
+
+.menu-item.active a {
+    background-color: #3498db;
+    border-left: 3px solid #2980b9;
+}
+
+.menu-item.disabled a {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.menu-item.disabled a:hover {
+    background-color: transparent;
+    padding-left: 20px;
+}
+
+.menu-icon {
+    font-size: 16px;
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.menu-text {
+    font-size: 13px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ecf0f1;
+    margin-left: 250px;
+    transition: margin-left 0.3s;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background-color: white;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.breadcrumb span {
+    margin-right: 5px;
+}
+
+.breadcrumb span:not(:last-child)::after {
+    content: " > ";
+    margin-left: 5px;
+}
+
+/* Content Area */
+.content-area {
+    flex: 1;
+    padding: 20px;
+    overflow: auto;
+}
+
+/* Welcome Page */
+.welcome-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.welcome-page h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.welcome-page p {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+/* Quick Access */
+.quick-access {
+    margin-top: 30px;
+}
+
+.quick-access h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #34495e;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.quick-link-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.quick-link-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.card-desc {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* System Info */
+.system-info {
+    margin-top: 40px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.system-info h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #34495e;
+}
+
+.system-info ul {
+    list-style: none;
+}
+
+.system-info li {
+    padding: 5px 0;
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 50px;
+        height: calc(100vh - 50px);
+        z-index: 999;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .navbar {
+        position: fixed;
+        width: 100%;
+        top: 0;
+    }
+    
+    .main-container {
+        padding-top: 50px;
+    }
+}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardlinkCRM 系統</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/menu.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- 頂部導航列 -->
+        <header class="navbar">
+            <div class="navbar-brand">
+                <h1>CardlinkCRM 信用卡管理系統</h1>
+            </div>
+            <div class="navbar-info">
+                <span class="user-info">使用者: Admin</span>
+                <span class="datetime" id="datetime"></span>
+            </div>
+        </header>
+        
+        <!-- 側邊選單 -->
+        <aside class="sidebar">
+            <nav class="menu">
+                <div class="menu-section">
+                    <h3 class="menu-title">交易管理</h3>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <a href="#" onclick="loadPage('transaction-records')">
+                                <span class="menu-icon">📊</span>
+                                <span class="menu-text">刷卡紀錄查詢</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" onclick="loadPage('installment-system')">
+                                <span class="menu-icon">💳</span>
+                                <span class="menu-text">分期作業</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3 class="menu-title">客戶管理</h3>
+                    <ul class="menu-list">
+                        <li class="menu-item disabled">
+                            <a href="#">
+                                <span class="menu-icon">👤</span>
+                                <span class="menu-text">客戶資料維護</span>
+                            </a>
+                        </li>
+                        <li class="menu-item disabled">
+                            <a href="#">
+                                <span class="menu-icon">📋</span>
+                                <span class="menu-text">申請書管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3 class="menu-title">報表中心</h3>
+                    <ul class="menu-list">
+                        <li class="menu-item disabled">
+                            <a href="#">
+                                <span class="menu-icon">📈</span>
+                                <span class="menu-text">交易統計報表</span>
+                            </a>
+                        </li>
+                        <li class="menu-item disabled">
+                            <a href="#">
+                                <span class="menu-icon">📉</span>
+                                <span class="menu-text">財務分析報表</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3 class="menu-title">系統設定</h3>
+                    <ul class="menu-list">
+                        <li class="menu-item disabled">
+                            <a href="#">
+                                <span class="menu-icon">⚙️</span>
+                                <span class="menu-text">參數設定</span>
+                            </a>
+                        </li>
+                        <li class="menu-item disabled">
+                            <a href="#">
+                                <span class="menu-icon">🔐</span>
+                                <span class="menu-text">權限管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- 主要內容區 -->
+        <main class="main-content">
+            <div class="breadcrumb" id="breadcrumb">
+                <span>首頁</span>
+            </div>
+            
+            <div class="content-area" id="content-area">
+                <!-- 歡迎頁面 -->
+                <div class="welcome-page">
+                    <h2>歡迎使用 CardlinkCRM 系統</h2>
+                    <p>請從左側選單選擇功能</p>
+                    
+                    <div class="quick-access">
+                        <h3>快速存取</h3>
+                        <div class="quick-links">
+                            <div class="quick-link-card" onclick="loadPage('transaction-records')">
+                                <div class="card-icon">📊</div>
+                                <div class="card-title">刷卡紀錄查詢</div>
+                                <div class="card-desc">查詢信用卡交易紀錄與授權狀態</div>
+                            </div>
+                            <div class="quick-link-card" onclick="loadPage('installment-system')">
+                                <div class="card-icon">💳</div>
+                                <div class="card-title">分期作業</div>
+                                <div class="card-desc">申請交易分期付款服務</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="system-info">
+                        <h3>系統資訊</h3>
+                        <ul>
+                            <li>系統版本: v2.0.0</li>
+                            <li>最後更新: 2024/01/15</li>
+                            <li>瀏覽器: <span id="browser-info"></span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/common.js"></script>
+    <script src="js/menu.js"></script>
+</body>
+</html>
