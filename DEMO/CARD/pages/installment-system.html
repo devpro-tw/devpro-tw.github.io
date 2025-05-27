@@ -1,67 +1,610 @@
-<div class="container">
-    <h1>分期作業</h1>
-    
-    <!-- Tab Control -->
-    <div class="tabs" style="display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px;">
-        <div class="tab active" onclick="InstallmentSystem.switchTab(0)" style="padding: 8px 20px; cursor: pointer; background-color: white; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">申請分期</div>
-        <div class="tab" onclick="InstallmentSystem.switchTab(1)" style="padding: 8px 20px; cursor: pointer; background-color: #f5f5f5; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">已授權未請款交易</div>
-        <div class="tab" onclick="InstallmentSystem.switchTab(2)" style="padding: 8px 20px; cursor: pointer; background-color: #f5f5f5; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">已請款未結帳交易</div>
-        <div class="tab" onclick="InstallmentSystem.switchTab(3)" style="padding: 8px 20px; cursor: pointer; background-color: #f5f5f5; border: 1px solid #e0e0e0; border-bottom: none; margin-right: 2px;">已請款已結帳交易</div>
-    </div>
-    
-    <!-- Tab Content -->
-    <div id="tab-content-0" class="tab-content active">
-        <!-- 已授權未請款交易 -->
-        <div class="section-header" style="font-weight: bold; margin: 15px 0 10px 0;">
-            已授權未請款交易
-            <button onclick="InstallmentSystem.applySingleInstallment()">單筆分期</button>
-            <button style="color: maroon; font-weight: bold;" onclick="InstallmentSystem.calculate(1)">試算</button>
-        </div>
-        <div class="grid-container" style="max-height: 120px;">
-            <table id="grid1">
-                <thead>
-                    <tr>
-                        <th>SEL</th>
-                        <th>ID</th>
-                        <th>期數</th>
-                        <th>卡號</th>
-                        <th>TYPE</th>
-                        <th>刷卡金額</th>
-                        <th>交易日期</th>
-                        <th>交易時間</th>
-                        <th>交易金額</th>
-                        <th>授權碼</th>
-                        <th>行業別</th>
-                        <th>Merch No</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 動態資料 -->
-                </tbody>
-            </table>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分期作業 - CardlinkCRM</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            font-size: 12px;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        /* Tab Control */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 8px 20px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
+            margin-right: 2px;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background-color: #e8e8e8;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-top: 2px solid #4285f4;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            min-height: 468px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            font-weight: bold;
+            font-size: 13px;
+            margin: 15px 0 10px 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 6px 20px;
+            background-color: #e0e0e0;
+            border: 1px solid #999;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 10px;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background-color: #d0d0d0;
+        }
+        
+        button.primary {
+            background-color: #4285f4;
+            color: white;
+            border-color: #3367d6;
+        }
+        
+        button.primary:hover {
+            background-color: #3367d6;
+        }
+        
+        button.calculate {
+            color: maroon;
+            font-weight: bold;
+        }
+        
+        /* Grid Container */
+        .grid-container {
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 120px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        /* Scrollbar styling */
+        .grid-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .grid-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        table {
+            border-collapse: collapse;
+            font-size: 11px;
+            min-width: 1000px;
+            width: 100%;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-weight: normal;
+            color: #555;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* Checkbox styling */
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+        
+        /* Select (ComboBox) in table */
+        select {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 11px;
+            font-family: inherit;
+        }
+        
+        /* Column widths */
+        th:nth-child(1), td:nth-child(1) { width: 50px; text-align: center; }  /* SEL */
+        th:nth-child(2), td:nth-child(2) { min-width: 90px; }  /* ID */
+        th:nth-child(3), td:nth-child(3) { min-width: 150px; } /* 期數 */
+        th:nth-child(4), td:nth-child(4) { min-width: 120px; } /* 卡號 */
+        th:nth-child(5), td:nth-child(5) { min-width: 60px; }  /* TYPE */
+        th:nth-child(6), td:nth-child(6) { min-width: 100px; } /* 金額 */
+        th:nth-child(7), td:nth-child(7) { min-width: 90px; }  /* 交易日期 */
+        th:nth-child(8), td:nth-child(8) { min-width: 90px; }  /* 時間/請款日期 */
+        th:nth-child(9), td:nth-child(9) { min-width: 100px; } /* 特店代碼 */
+        th:nth-child(10), td:nth-child(10) { min-width: 120px; } /* 消費說明 */
+        th:nth-child(11), td:nth-child(11) { min-width: 80px; } /* 授權碼 */
+        th:nth-child(12), td:nth-child(12) { min-width: 80px; } /* MCC/行業別 */
+        th:nth-child(13), td:nth-child(13) { min-width: 80px; } /* 帳單月份 */
+        
+        /* Action buttons area */
+        .action-buttons {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        /* WebBrowser simulation */
+        .web-browser {
+            width: 100%;
+            height: 450px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>分期作業</h1>
+        
+        <!-- Tab Control -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(0)">申請分期</div>
+            <div class="tab" onclick="switchTab(1)">已授權未請款交易</div>
+            <div class="tab" onclick="switchTab(2)">已請款未結帳交易</div>
+            <div class="tab" onclick="switchTab(3)">已請款已結帳交易</div>
         </div>
         
-        <div class="action-buttons" style="text-align: center; margin-top: 20px;">
-            <button class="primary" onclick="InstallmentSystem.applyInstallment()">申請分期</button>
-            <button onclick="InstallmentSystem.reselect()">重新選擇</button>
+        <!-- Tab Content 1: 申請分期 -->
+        <div class="tab-content active" id="tab0">
+            <!-- 已授權未請款交易 -->
+            <div class="section-header">
+                已授權未請款交易
+                <button onclick="applySingleInstallment()">單筆分期</button>
+                <button class="calculate" onclick="calculate(1)">試算</button>
+            </div>
+            <div class="grid-container">
+                <table id="grid1">
+                    <thead>
+                        <tr>
+                            <th>SEL</th>
+                            <th>ID</th>
+                            <th>期數</th>
+                            <th>卡號</th>
+                            <th>TYPE</th>
+                            <th>刷卡金額</th>
+                            <th>交易日期</th>
+                            <th>交易時間</th>
+                            <th>交易金額</th>
+                            <th>授權碼</th>
+                            <th>行業別</th>
+                            <th>Merch No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" /></td>
+                            <td>A123456789</td>
+                            <td>
+                                <select>
+                                    <option value="">請選擇</option>
+                                    <option value="3">3期</option>
+                                    <option value="6">6期</option>
+                                    <option value="12">12期</option>
+                                    <option value="24">24期</option>
+                                </select>
+                            </td>
+                            <td>5234****1234</td>
+                            <td>VISA</td>
+                            <td>15,000</td>
+                            <td>2024/01/15</td>
+                            <td>14:32:15</td>
+                            <td>15,000</td>
+                            <td>123456</td>
+                            <td>5411</td>
+                            <td>M12345678</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 已請款未結帳交易 -->
+            <div class="section-header">
+                已請款未結帳交易
+                <button onclick="search(2)">查詢</button>
+                <button class="calculate" onclick="calculate(2)">試算</button>
+            </div>
+            <div class="grid-container">
+                <table id="grid2">
+                    <thead>
+                        <tr>
+                            <th>SEL</th>
+                            <th>ID</th>
+                            <th>期數</th>
+                            <th>卡號</th>
+                            <th>TYPE</th>
+                            <th>交易金額</th>
+                            <th>交易日期</th>
+                            <th>請款日期</th>
+                            <th>特店代碼</th>
+                            <th>消費說明</th>
+                            <th>授權碼</th>
+                            <th>MCC CODE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 動態資料 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 已請款已結帳交易 -->
+            <div class="section-header">
+                已請款已結帳交易
+                <button onclick="search(3)">查詢</button>
+                <button class="calculate" onclick="calculate(3)">試算</button>
+            </div>
+            <div class="grid-container">
+                <table id="grid3">
+                    <thead>
+                        <tr>
+                            <th>SEL</th>
+                            <th>ID</th>
+                            <th>期數</th>
+                            <th>卡號</th>
+                            <th>TYPE</th>
+                            <th>交易金額</th>
+                            <th>交易日期</th>
+                            <th>請款日期</th>
+                            <th>特店代碼</th>
+                            <th>消費說明</th>
+                            <th>授權碼</th>
+                            <th>MCC CODE</th>
+                            <th>帳單月份</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 動態資料 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 申請按鈕區 -->
+            <div class="action-buttons">
+                <button class="primary" onclick="applyInstallment()">申請分期</button>
+                <button onclick="reselect()">重新選擇</button>
+            </div>
+        </div>
+        
+        <!-- Tab Content 2: 已授權未請款交易 -->
+        <div class="tab-content" id="tab1">
+            <div class="web-browser">
+                <p>已授權未請款交易報表</p>
+            </div>
+        </div>
+        
+        <!-- Tab Content 3: 已請款未結帳交易 -->
+        <div class="tab-content" id="tab2">
+            <div class="web-browser">
+                <p>已請款未結帳交易報表</p>
+            </div>
+        </div>
+        
+        <!-- Tab Content 4: 已請款已結帳交易 -->
+        <div class="tab-content" id="tab3">
+            <div class="web-browser">
+                <p>已請款已結帳交易報表</p>
+            </div>
         </div>
     </div>
     
-    <div id="tab-content-1" class="tab-content" style="display: none;">
-        <div style="height: 450px; background-color: #fafafa; display: flex; align-items: center; justify-content: center;">
-            <p>已授權未請款交易報表</p>
-        </div>
+    <!-- 底部按鈕 -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="goBack()">回上一頁</button>
     </div>
     
-    <div id="tab-content-2" class="tab-content" style="display: none;">
-        <div style="height: 450px; background-color: #fafafa; display: flex; align-items: center; justify-content: center;">
-            <p>已請款未結帳交易報表</p>
-        </div>
-    </div>
-    
-    <div id="tab-content-3" class="tab-content" style="display: none;">
-        <div style="height: 450px; background-color: #fafafa; display: flex; align-items: center; justify-content: center;">
-            <p>已請款已結帳交易報表</p>
-        </div>
-    </div>
-</div>
+    <script>
+        // Tab 切換功能
+        function switchTab(index) {
+            // 更新 tab 樣式
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                    contents[i].classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                    contents[i].classList.remove('active');
+                }
+            });
+            
+            // 如果切換到報表頁面，模擬載入報表
+            if (index > 0) {
+                loadReport(index);
+            }
+        }
+        
+        // 查詢功能
+        function search(gridNumber) {
+            alert(`執行查詢 Grid ${gridNumber}...`);
+            loadGridData(gridNumber);
+        }
+        
+        // 試算功能
+        function calculate(gridNumber) {
+            const selected = getSelectedRows(gridNumber);
+            if (selected.length === 0) {
+                alert('請先選擇要試算的交易項目');
+                return;
+            }
+            alert(`執行試算 Grid ${gridNumber}...`);
+            // 這裡可以開啟試算視窗或顯示試算結果
+        }
+        
+        // 單筆分期
+        function applySingleInstallment() {
+            const selected = getSelectedRows(1);
+            if (selected.length !== 1) {
+                alert('請選擇一筆交易進行單筆分期');
+                return;
+            }
+            alert('執行單筆分期申請...');
+        }
+        
+        // 申請分期
+        function applyInstallment() {
+            const allSelected = [];
+            for (let i = 1; i <= 3; i++) {
+                allSelected.push(...getSelectedRows(i));
+            }
+            
+            if (allSelected.length === 0) {
+                alert('請選擇要申請分期的交易項目');
+                return;
+            }
+            
+            // 檢查是否都選擇了期數
+            const missingPeriod = allSelected.find(row => !row.period);
+            if (missingPeriod) {
+                alert('請為所有選擇的交易設定分期期數');
+                return;
+            }
+            
+            alert(`申請分期: 共 ${allSelected.length} 筆交易`);
+        }
+        
+        // 重新選擇
+        function reselect() {
+            if (confirm('確定要清除所有選擇嗎？')) {
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
+                document.querySelectorAll('select').forEach(sel => {
+                    sel.value = '';
+                });
+            }
+        }
+        
+        // 獲取選中的行
+        function getSelectedRows(gridNumber) {
+            const grid = document.getElementById(`grid${gridNumber}`);
+            const rows = grid.querySelectorAll('tbody tr');
+            const selected = [];
+            
+            rows.forEach((row, index) => {
+                const checkbox = row.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    const select = row.querySelector('select');
+                    selected.push({
+                        index: index,
+                        row: row,
+                        period: select ? select.value : null
+                    });
+                }
+            });
+            
+            return selected;
+        }
+        
+        // 載入 Grid 資料
+        function loadGridData(gridNumber) {
+            const tbody = document.querySelector(`#grid${gridNumber} tbody`);
+            tbody.innerHTML = '';
+            
+            // 模擬資料
+            const sampleData = [
+                {
+                    id: 'B987654321',
+                    card: '5234****5678',
+                    type: 'MASTER',
+                    amount: '25,000',
+                    txDate: '2024/01/14',
+                    deDate: '2024/01/16',
+                    merchNo: 'M87654321',
+                    memo: '百貨公司消費',
+                    authCode: '654321',
+                    mcc: '5311',
+                    stmtMm: '2024/02'
+                },
+                {
+                    id: 'C135792468',
+                    card: '5234****9012',
+                    type: 'VISA',
+                    amount: '8,500',
+                    txDate: '2024/01/13',
+                    deDate: '2024/01/15',
+                    merchNo: 'M13579246',
+                    memo: '餐廳消費',
+                    authCode: '135792',
+                    mcc: '5812',
+                    stmtMm: '2024/02'
+                }
+            ];
+            
+            sampleData.forEach(data => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="checkbox" /></td>
+                    <td>${data.id}</td>
+                    <td>
+                        <select>
+                            <option value="">請選擇</option>
+                            <option value="3">3期</option>
+                            <option value="6">6期</option>
+                            <option value="12">12期</option>
+                            <option value="24">24期</option>
+                        </select>
+                    </td>
+                    <td>${data.card}</td>
+                    <td>${data.type}</td>
+                    <td>${data.amount}</td>
+                    <td>${data.txDate}</td>
+                    <td>${data.deDate}</td>
+                    <td>${data.merchNo}</td>
+                    <td>${data.memo}</td>
+                    <td>${data.authCode}</td>
+                    <td>${data.mcc}</td>
+                    ${gridNumber === 3 ? `<td>${data.stmtMm}</td>` : ''}
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 載入報表
+        function loadReport(tabIndex) {
+            const browser = document.querySelector(`#tab${tabIndex} .web-browser`);
+            browser.innerHTML = '<p>載入報表中...</p>';
+            
+            setTimeout(() => {
+                browser.innerHTML = '<p>報表已載入完成</p>';
+            }, 1000);
+        }
+        
+        // 回上一頁
+        function goBack() {
+            if (confirm('確定要離開此頁面嗎？')) {
+                window.history.back();
+            }
+        }
+        
+        // 頁面載入時的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 為所有 checkbox 添加事件
+            document.addEventListener('change', function(e) {
+                if (e.target.type === 'checkbox') {
+                    const row = e.target.closest('tr');
+                    if (row) {
+                        row.style.backgroundColor = e.target.checked ? '#e8f0fe' : '';
+                    }
+                }
+            });
+            
+            // Grid 雙擊事件
+            document.querySelectorAll('table').forEach(table => {
+                table.addEventListener('dblclick', function(e) {
+                    if (e.target.tagName === 'TD' && e.target.cellIndex > 0) {
+                        const row = e.target.parentElement;
+                        const id = row.cells[1].textContent;
+                        alert(`查看交易明細: ${id}`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

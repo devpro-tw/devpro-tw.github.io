@@ -4,12 +4,12 @@
 const PAGES = {
     'transaction-records': {
         title: '刷卡紀錄查詢',
-        url: 'transaction-records.html',
+        url: 'pages/transaction-records.html',
         breadcrumb: ['首頁', '交易管理', '刷卡紀錄查詢']
     },
     'installment-system': {
         title: '分期作業',
-        url: 'installment-system.html',
+        url: 'pages/installment-system.html',
         breadcrumb: ['首頁', '交易管理', '分期作業']
     }
 };
@@ -40,25 +40,16 @@ function loadPage(pageId) {
     if (!iframe) {
         iframe = document.createElement('iframe');
         iframe.id = 'content-frame';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.border = 'none';
+        contentArea.innerHTML = ''; // 清空原有內容
         contentArea.appendChild(iframe);
     }
 
     // 載入頁面
-    iframe.src = `/DEMO/CARD/pages/${page.url}`;
     iframe.onload = () => {
         Utils.hideLoading(contentArea);
         currentPage = pageId;
-        
-        // 初始化頁面功能
-        if (pageId === 'transaction-records') {
-            iframe.contentWindow.TransactionRecords?.init();
-        } else if (pageId === 'installment-system') {
-            iframe.contentWindow.InstallmentSystem?.init();
-        }
     };
+    iframe.src = page.url;
 }
 
 // 更新 breadcrumb
