@@ -42,7 +42,7 @@
 /* Sidebar */
 .sidebar {
     background-color: #34495e;
-    width: 250px;
+    width: 180px;
     min-height: calc(100vh - 50px);
     color: white;
     transition: width 0.3s;
@@ -120,7 +120,7 @@
     display: flex;
     flex-direction: column;
     background-color: #ecf0f1;
-    margin-left: 250px;
+    margin-left: 180px;
     transition: margin-left 0.3s;
 }
 
@@ -245,7 +245,7 @@
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
-        left: -250px;
+        left: -180px;
         top: 50px;
         height: calc(100vh - 50px);
         z-index: 999;
