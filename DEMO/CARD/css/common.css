@@ -75,9 +75,17 @@ body {
 
 .content-area {
     flex: 1;
-    overflow-y: auto;
-    padding: 20px;
+    overflow: hidden;  /* 改為 hidden,因為滾動由 iframe 內容處理 */
+    padding: 0;       /* 移除 padding,因為內容頁面會自行處理間距 */
     background-color: #fff;
+}
+
+/* Content Frame */
+#content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
 }
 
 /* Typography */

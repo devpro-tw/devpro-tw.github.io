@@ -35,15 +35,30 @@ function loadPage(pageId) {
     const contentArea = document.getElementById('content-area');
     Utils.showLoading(contentArea);
 
-    // 模擬載入頁面內容
-    setTimeout(() => {
-        if (pageId === 'transaction-records') {
-            loadTransactionRecords(contentArea);
-        } else if (pageId === 'installment-system') {
-            loadInstallmentSystem(contentArea);
-        }
+    // 建立或取得 iframe
+    let iframe = document.getElementById('content-frame');
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'content-frame';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        contentArea.appendChild(iframe);
+    }
+
+    // 載入頁面
+    iframe.src = `/DEMO/CARD/pages/${page.url}`;
+    iframe.onload = () => {
+        Utils.hideLoading(contentArea);
         currentPage = pageId;
-    }, 300);
+        
+        // 初始化頁面功能
+        if (pageId === 'transaction-records') {
+            iframe.contentWindow.TransactionRecords?.init();
+        } else if (pageId === 'installment-system') {
+            iframe.contentWindow.InstallmentSystem?.init();
+        }
+    };
 }
 
 // 更新 breadcrumb
@@ -66,36 +81,6 @@ function updateMenuActive(pageId) {
             link.parentElement.classList.add('active');
         }
     });
-}
-
-// 載入刷卡紀錄查詢頁面
-async function loadTransactionRecords(container) {
-    try {
-        const response = await fetch('/DEMO/CARD/pages/transaction-records.html');
-        const html = await response.text();
-        container.innerHTML = html;
-        
-        // 初始化頁面功能
-        TransactionRecords.init();
-    } catch (error) {
-        console.error('載入交易紀錄頁面失敗:', error);
-        Utils.showError('載入頁面失敗');
-    }
-}
-
-// 載入分期作業頁面
-async function loadInstallmentSystem(container) {
-    try {
-        const response = await fetch('/DEMO/CARD/pages/installment-system.html');
-        const html = await response.text();
-        container.innerHTML = html;
-        
-        // 初始化頁面功能
-        InstallmentSystem.init();
-    } catch (error) {
-        console.error('載入分期作業頁面失敗:', error);
-        Utils.showError('載入頁面失敗');
-    }
 }
 
 // 刷卡紀錄查詢頁面功能
