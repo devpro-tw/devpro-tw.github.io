@@ -217,3 +217,36 @@ const InstallmentSystem = {
         ]);
     }
 };
+
+// 添加寬度調整功能
+document.addEventListener('DOMContentLoaded', function() {
+    const resizer = document.getElementById('dragMe');
+    const sidebar = document.querySelector('.sidebar');
+    
+    let isResizing = false;
+    let lastDownX = 0;
+    
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        lastDownX = e.clientX;
+        document.body.style.cursor = 'col-resize';
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        
+        const delta = e.clientX - lastDownX;
+        const newWidth = sidebar.offsetWidth + delta;
+        
+        if (newWidth >= 150 && newWidth <= 500) {
+            sidebar.style.width = `${newWidth}px`;
+            sidebar.style.flexBasis = `${newWidth}px`;
+            lastDownX = e.clientX;
+        }
+    });
+    
+    document.addEventListener('mouseup', () => {
+        isResizing = false;
+        document.body.style.cursor = 'default';
+    });
+});
