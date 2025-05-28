@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佔額(PCAI)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .form-container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        /* 按鈕區域 */
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        
+        .button-row button {
+            padding: 8px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            min-width: 120px;
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+        }
+        
+        .button-row button:hover {
+            background-color: #e8e8e8;
+        }
+        
+        /* 表單區域 - 嚴格四欄設計 */
+        .form-section {
+            flex-shrink: 0;
+            margin-bottom: 20px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        
+        .form-group label {
+            font-weight: normal;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+            min-width: 100px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .form-group input[type="text"] {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 6px 8px;
+            font-size: 14px;
+            height: 28px;
+            min-width: 0;
+        }
+        
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        /* 備註欄位 - 跨三欄 */
+        .remark-group {
+            grid-column: span 3;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .remark-group input {
+            flex: 1;
+        }
+        
+        .remark-button {
+            grid-column: 4;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        /* 空白佔位欄位 */
+        .empty-group {
+            visibility: hidden;
+        }
+        
+        /* 內容區域 - 可捲動 */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        /* Grid 表格 */
+        .grid-section {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 200px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+            flex-shrink: 0;
+        }
+        
+        .grid-container {
+            width: 100%;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            flex: 1;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        th {
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: normal;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            border-bottom: 1px solid #eee;
+            padding: 8px 10px;
+            white-space: nowrap;
+        }
+        
+        tr:hover {
+            background-color: #f5f8ff;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 注意事項 */
+        .notice-box {
+            border: 1px solid #ddd;
+            background-color: #f8f8f8;
+            padding: 8px 15px;
+            margin-top: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        
+        .notice-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .notice-box li {
+            margin-bottom: 3px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* 防止視窗過小時破版 */
+        @media screen and (max-width: 1400px) {
+            .form-container {
+                min-width: 1400px;
+            }
+            
+            body {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <!-- 按鈕列 -->
+        <div class="button-row">
+            <button onclick="queryData()" class="hidden">查詢</button>
+            <button onclick="updateRemark()" class="hidden">更新備註</button>
+            <button onclick="cancelOrRestore()">取消/補佔額</button>
+        </div>
+        
+        <!-- 表單區域 - 嚴格四欄設計 -->
+        <div class="form-section">
+            <div class="form-grid">
+                <!-- 第一行：主卡ID、附卡ID、Agent ID(隱藏)、空白 -->
+                <div class="form-group">
+                    <label>主卡ID</label>
+                    <input type="text" value="1234567890123456">
+                </div>
+                <div class="form-group">
+                    <label>附卡ID</label>
+                    <input type="text" value="9876543210">
+                </div>
+                <div class="form-group hidden">
+                    <label>Agent ID</label>
+                    <input type="text" value="0002">
+                </div>
+                <div class="form-group empty">
+                    <label>&nbsp;</label>
+                    <input type="text">
+                </div>
+                
+                <!-- 第二行：固定額度、卡片授權筆數、最近一次結帳日、空白 -->
+                <div class="form-group">
+                    <label>固定額度</label>
+                    <input type="text" value="200,000">
+                </div>
+                <div class="form-group">
+                    <label>卡片授權筆數</label>
+                    <input type="text" value="15">
+                </div>
+                <div class="form-group">
+                    <label>最近一次結帳日</label>
+                    <input type="text" value="2024/12/25">
+                </div>
+                <div class="form-group empty">
+                    <label>&nbsp;</label>
+                    <input type="text">
+                </div>
+                
+                <!-- 第三行：可用額度、卡片授權金額、卡片已掛帳金額、狀態更新日 -->
+                <div class="form-group">
+                    <label>可用額度</label>
+                    <input type="text" value="165,500">
+                </div>
+                <div class="form-group">
+                    <label>卡片授權金額</label>
+                    <input type="text" value="34,500">
+                </div>
+                <div class="form-group">
+                    <label>卡片已掛帳金額</label>
+                    <input type="text" value="28,000">
+                </div>
+                <div class="form-group">
+                    <label>狀態更新日</label>
+                    <input type="text" value="2024/12/28">
+                </div>
+                
+                <!-- 第四行：預借現金額度、當日授權筆數、空白、空白 -->
+                <div class="form-group">
+                    <label>預借現金額度</label>
+                    <input type="text" value="100,000">
+                </div>
+                <div class="form-group">
+                    <label>當日授權筆數</label>
+                    <input type="text" value="3">
+                </div>
+                <div class="form-group empty">
+                    <label>&nbsp;</label>
+                    <input type="text">
+                </div>
+                <div class="form-group empty">
+                    <label>&nbsp;</label>
+                    <input type="text">
+                </div>
+                
+                <!-- 第五行：可預借現金額度、當日授權金額、空白、空白 -->
+                <div class="form-group">
+                    <label>可預借現金額度</label>
+                    <input type="text" value="95,000">
+                </div>
+                <div class="form-group">
+                    <label>當日授權金額</label>
+                    <input type="text" value="5,500">
+                </div>
+                <div class="form-group empty">
+                    <label>&nbsp;</label>
+                    <input type="text">
+                </div>
+                <div class="form-group empty">
+                    <label>&nbsp;</label>
+                    <input type="text">
+                </div>
+                
+                <!-- 備註行：備註（跨3欄）、空白 -->
+                <div class="remark-group">
+                    <label style="min-width: 100px; text-align: right;">備註</label>
+                    <input type="text" value="白金卡客戶，信用良好" readonly>
+                </div>
+                <div class="remark-button">
+                    <!-- 按鈕已移至上方按鈕列 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 可捲動內容區域 -->
+        <div class="content-area">
+            <!-- 授權明細表格 -->
+            <div class="grid-section">
+                <div class="section-title">授權明細</div>
+                <div class="grid-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>交易日期</th>
+                                <th>交易金額</th>
+                                <th>授權碼</th>
+                                <th>佔額天數</th>
+                                <th>其他</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024/12/28</td>
+                                <td>5,500</td>
+                                <td>AUTH001</td>
+                                <td>1</td>
+                                <td>線上交易</td>
+                            </tr>
+                            <tr>
+                                <td>2024/12/27</td>
+                                <td>12,000</td>
+                                <td>AUTH002</td>
+                                <td>2</td>
+                                <td>實體商店</td>
+                            </tr>
+                            <tr>
+                                <td>2024/12/26</td>
+                                <td>8,500</td>
+                                <td>AUTH003</td>
+                                <td>3</td>
+                                <td>預授權</td>
+                            </tr>
+                            <tr>
+                                <td>2024/12/25</td>
+                                <td>3,200</td>
+                                <td>AUTH004</td>
+                                <td>4</td>
+                                <td>網路購物</td>
+                            </tr>
+                            <tr>
+                                <td>2024/12/24</td>
+                                <td>5,300</td>
+                                <td>AUTH005</td>
+                                <td>5</td>
+                                <td>海外交易</td>
+                            </tr>
+                            <tr>
+                                <td>2024/12/23</td>
+                                <td>2,800</td>
+                                <td>AUTH006</td>
+                                <td>6</td>
+                                <td>電話訂購</td>
+                            </tr>
+                            <tr>
+                                <td>2024/12/22</td>
+                                <td>15,600</td>
+                                <td>AUTH007</td>
+                                <td>7</td>
+                                <td>飯店預授權</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 注意事項 -->
+            <div class="notice-box">
+                <ul>
+                    <li>臨時調高度額度不得進行預借現金</li>
+                    <li>授權依特約商店種類設定日限次日限額，超過限額時會請特約商店照會銀行，此項行為是為"保護持卡人避免偽冒"</li>
+                    <li>若查不到刷卡被拒紀錄，可能為特約商店連線失敗亦或磁卡失磁</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function queryData() {
+            alert('執行查詢功能');
+        }
+        
+        function updateRemark() {
+            const newRemark = prompt('請輸入新的備註：');
+            if (newRemark !== null) {
+                document.querySelector('.remark-group input').value = newRemark;
+                alert('備註已更新');
+            }
+        }
+        
+        function cancelOrRestore() {
+            const action = confirm('請選擇操作：\n確定 - 取消授權\n取消 - 補佔額');
+            if (action) {
+                // 取消授權
+                const selectedRow = document.querySelector('tbody tr:hover');
+                if (selectedRow) {
+                    if (confirm('確定要取消此筆授權？')) {
+                        alert('授權已取消');
+                        selectedRow.remove();
+                    }
+                } else {
+                    alert('請先選擇要取消的授權記錄');
+                }
+            } else {
+                // 補佔額
+                const amount = prompt('請輸入補佔額金額：');
+                if (amount && !isNaN(amount)) {
+                    const tbody = document.querySelector('tbody');
+                    const newRow = tbody.insertRow(0);
+                    const today = new Date().toLocaleDateString('zh-TW').replace(/\//g, '/');
+                    newRow.innerHTML = `
+                        <td>${today}</td>
+                        <td>${parseFloat(amount).toLocaleString()}</td>
+                        <td>AUTH${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}</td>
+                        <td>0</td>
+                        <td>補佔額</td>
+                    `;
+                    alert('已補佔額 ' + parseFloat(amount).toLocaleString() + ' 元');
+                }
+            }
+        }
+        
+        document.querySelector('tbody').addEventListener('click', function(e) {
+            if (e.target.tagName === 'TD') {
+                const row = e.target.parentNode;
+                const rowData = Array.from(row.cells).map(cell => cell.textContent);
+                alert('授權明細：\n日期：' + rowData[0] + '\n金額：' + rowData[1] + '\n授權碼：' + rowData[2] + '\n佔額天數：' + rowData[3] + '\n其他：' + rowData[4]);
+            }
+        });
+        
+        let selectedRow = null;
+        document.querySelector('tbody').addEventListener('mouseover', function(e) {
+            if (e.target.tagName === 'TD') {
+                if (selectedRow) {
+                    selectedRow.style.backgroundColor = '';
+                }
+                selectedRow = e.target.parentNode;
+                selectedRow.style.backgroundColor = '#e8f4ff';
+            }
+        });
+        
+        document.querySelector('tbody').addEventListener('mouseout', function(e) {
+            if (e.target.tagName === 'TD') {
+                e.target.parentNode.style.backgroundColor = '';
+            }
+        });
+    </script>
+</body>
+</html>

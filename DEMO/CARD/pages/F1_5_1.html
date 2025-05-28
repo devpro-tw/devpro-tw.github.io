@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紅利積點查詢</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            font-size: 12px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            min-width: 850px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group.col-2 {
+            grid-column: span 2;
+        }
+
+        label {
+            text-align: right;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        input[type="text"],
+        select {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        input[readonly] {
+            background-color: #f5f5f5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        button {
+            padding: 6px 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #d0d0d0;
+        }
+
+        button.primary {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+
+        button.primary:hover {
+            background-color: #45a049;
+        }
+
+        .grid-container {
+            margin-top: 20px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #f8f8f8;
+            z-index: 10;
+        }
+
+        th {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            font-weight: normal;
+            background-color: #f8f8f8;
+            white-space: nowrap;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background-color: #f0f0f0;
+        }
+
+        th.sortable::after {
+            content: ' ↕';
+            color: #999;
+            font-size: 10px;
+        }
+
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .checkbox-cell {
+            text-align: center;
+            width: 50px;
+        }
+
+        .date-cell {
+            width: 100px;
+        }
+
+        .number-cell {
+            width: 100px;
+            text-align: right;
+        }
+
+        .description-cell {
+            min-width: 300px;
+        }
+
+        .user-cell {
+            width: 150px;
+        }
+
+        .message-box {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+            min-height: 100px;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 特殊輸入框樣式 */
+        .highlight-input {
+            background-color: #fffacd !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="margin-bottom: 20px; font-size: 16px;">紅利積點查詢</h2>
+        
+        <!-- 第一行：身份證號和按鈕 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="idNumber">身份證號</label>
+                <input type="text" id="idNumber" placeholder="請輸入身份證號" value="">
+            </div>
+            <div style="grid-column: 2 / 5; display: flex; justify-content: flex-end; gap: 8px;">
+                <button id="lookupBtn" class="hidden">查詢</button>
+                <button id="exchangeBtn" class="primary">紅利兌換</button>
+            </div>
+        </div>
+
+        <!-- 第二行：年度紅利資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="thisYear">今年累積紅利</label>
+                <input type="text" id="thisYear" readonly value="0">
+            </div>
+            <div class="form-group">
+                <label for="lastYear">去年累積紅利</label>
+                <input type="text" id="lastYear" readonly value="0">
+            </div>
+            <div class="form-group">
+                <label for="previousYear">前年累積紅利</label>
+                <input type="text" id="previousYear" readonly value="0">
+            </div>
+        </div>
+
+        <!-- 第三行：總累積和大前年 -->
+        <div class="form-row">
+            <div class="form-group col-2">
+                <label for="totalBonus">總累積可用紅利點數</label>
+                <input type="text" id="totalBonus" readonly value="0" class="highlight-input">
+            </div>
+            <div class="form-group">
+                <label for="suspense">大前年累積紅利</label>
+                <input type="text" id="suspense" readonly value="0">
+            </div>
+            <div class="form-group hidden">
+                <label for="agentId">Agent ID</label>
+                <input type="text" id="agentId" value="0002">
+            </div>
+        </div>
+
+        <!-- 紅利兌換明細表格 -->
+        <div class="grid-container">
+            <table id="bonusTable">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell">
+                            <input type="checkbox" id="selectAll">
+                        </th>
+                        <th class="sortable date-cell" data-column="date">交易日期</th>
+                        <th class="sortable number-cell" data-column="points">兌換點數</th>
+                        <th class="description-cell">明細說明</th>
+                        <th class="user-cell">執行人員</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 資料會動態填入 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 訊息顯示區 -->
+        <div class="message-box" id="messageBox">紅利兌換查詢</div>
+    </div>
+
+    <script>
+        // 模擬資料
+        const mockData = {
+            customerInfo: {
+                id: 'A123456789',
+                thisYear: 1250,
+                lastYear: 2300,
+                previousYear: 1800,
+                suspense: 1500,
+                totalAvailable: 6850
+            },
+            transactions: [
+                {
+                    date: '2024/12/01',
+                    points: -500,
+                    description: '兌換現金折抵券 - 500元',
+                    operator: 'OP001 張小明'
+                },
+                {
+                    date: '2024/11/15',
+                    points: -1000,
+                    description: '兌換商品 - 精品皮夾',
+                    operator: 'OP002 李小華'
+                },
+                {
+                    date: '2024/10/20',
+                    points: -200,
+                    description: '兌換停車折抵券',
+                    operator: 'OP001 張小明'
+                },
+                {
+                    date: '2024/09/10',
+                    points: -300,
+                    description: '兌換電影票券 x2',
+                    operator: 'OP003 王大同'
+                },
+                {
+                    date: '2024/08/05',
+                    points: -800,
+                    description: '兌換百貨禮券 - 800元',
+                    operator: 'OP002 李小華'
+                }
+            ]
+        };
+
+        // 排序狀態
+        let sortColumn = null;
+        let sortDirection = 'asc';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 綁定事件
+            document.getElementById('lookupBtn').addEventListener('click', handleLookup);
+            document.getElementById('exchangeBtn').addEventListener('click', handleExchange);
+            document.getElementById('selectAll').addEventListener('change', handleSelectAll);
+            
+            // 綁定排序事件
+            document.querySelectorAll('.sortable').forEach(th => {
+                th.addEventListener('click', handleSort);
+            });
+
+            // 載入模擬資料
+            loadMockData();
+        });
+
+        // 查詢功能
+        function handleLookup() {
+            const idNumber = document.getElementById('idNumber').value.trim();
+            
+            if (!idNumber) {
+                showMessage('請輸入身份證號');
+                return;
+            }
+
+            // 驗證身份證號格式
+            if (!validateID(idNumber)) {
+                showMessage('身份證號格式錯誤');
+                return;
+            }
+
+            showMessage(`查詢中...身份證號: ${idNumber}`);
+            
+            // 模擬查詢後載入資料
+            setTimeout(() => {
+                loadMockData();
+                showMessage(`查詢完成 - 身份證號: ${idNumber}\n總累積可用紅利點數: ${mockData.customerInfo.totalAvailable}`);
+            }, 500);
+        }
+
+        // 紅利兌換功能
+        function handleExchange() {
+            const selectedRows = getSelectedRows();
+            
+            if (selectedRows.length === 0) {
+                alert('請選擇要處理的紅利兌換記錄');
+                return;
+            }
+
+            const totalPoints = selectedRows.reduce((sum, row) => sum + row.points, 0);
+            const confirmMsg = `確定要處理 ${selectedRows.length} 筆紅利兌換記錄？\n總計點數: ${totalPoints}`;
+            
+            if (confirm(confirmMsg)) {
+                showMessage(`處理中...\n已選擇 ${selectedRows.length} 筆記錄\n總計點數: ${totalPoints}`);
+                
+                // 模擬處理過程
+                setTimeout(() => {
+                    showMessage(`紅利兌換處理完成\n處理筆數: ${selectedRows.length}\n兌換點數: ${totalPoints}\n處理時間: ${new Date().toLocaleString()}`);
+                }, 1000);
+            }
+        }
+
+        // 載入模擬資料
+        function loadMockData() {
+            const info = mockData.customerInfo;
+            
+            // 填入客戶資料
+            document.getElementById('idNumber').value = info.id;
+            document.getElementById('thisYear').value = info.thisYear.toLocaleString();
+            document.getElementById('lastYear').value = info.lastYear.toLocaleString();
+            document.getElementById('previousYear').value = info.previousYear.toLocaleString();
+            document.getElementById('suspense').value = info.suspense.toLocaleString();
+            document.getElementById('totalBonus').value = info.totalAvailable.toLocaleString();
+            
+            // 填入交易資料
+            renderTable(mockData.transactions);
+        }
+
+        // 渲染表格
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="checkbox-cell">
+                        <input type="checkbox" class="row-checkbox" data-index="${index}">
+                    </td>
+                    <td class="date-cell">${row.date}</td>
+                    <td class="number-cell">${row.points.toLocaleString()}</td>
+                    <td class="description-cell">${row.description}</td>
+                    <td class="user-cell">${row.operator}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // 綁定checkbox事件
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.addEventListener('change', updateSelectAll);
+            });
+        }
+
+        // 排序功能
+        function handleSort(e) {
+            const column = e.target.dataset.column;
+            
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+            
+            const sortedData = [...mockData.transactions].sort((a, b) => {
+                let aVal, bVal;
+                
+                switch(column) {
+                    case 'date':
+                        aVal = new Date(a.date);
+                        bVal = new Date(b.date);
+                        break;
+                    case 'points':
+                        aVal = a.points;
+                        bVal = b.points;
+                        break;
+                    default:
+                        return 0;
+                }
+                
+                if (sortDirection === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            renderTable(sortedData);
+        }
+
+        // 全選/取消全選
+        function handleSelectAll(e) {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.checked = isChecked;
+            });
+        }
+
+        // 更新全選checkbox狀態
+        function updateSelectAll() {
+            const allCheckboxes = document.querySelectorAll('.row-checkbox');
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const selectAll = document.getElementById('selectAll');
+            
+            selectAll.checked = allCheckboxes.length > 0 && allCheckboxes.length === checkedBoxes.length;
+        }
+
+        // 取得選中的資料
+        function getSelectedRows() {
+            const selected = [];
+            document.querySelectorAll('.row-checkbox:checked').forEach(cb => {
+                const index = parseInt(cb.dataset.index);
+                selected.push(mockData.transactions[index]);
+            });
+            return selected;
+        }
+
+        // 顯示訊息
+        function showMessage(msg) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = msg;
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+
+        // 驗證身份證號
+        function validateID(id) {
+            // 簡單的格式驗證
+            const pattern = /^[A-Z][12]\d{8}$/;
+            return pattern.test(id);
+        }
+    </script>
+</body>
+</html>

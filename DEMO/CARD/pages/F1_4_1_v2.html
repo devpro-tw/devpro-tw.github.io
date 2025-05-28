@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刷卡紀錄 - CardlinkCRM</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            font-size: 12px;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .form-group {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group.col-span-2 {
+            grid-column: span 2;
+        }
+        
+        .form-group.col-span-3 {
+            grid-column: span 3;
+        }
+        
+        .form-group.col-span-4 {
+            grid-column: span 4;
+        }
+        
+        label {
+            text-align: right;
+            color: #555;
+            font-weight: normal;
+            padding-right: 5px;
+        }
+        
+        input[type="text"], 
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            height: 22px;
+            resize: none;
+        }
+        
+        button {
+            padding: 6px 20px;
+            background-color: #e0e0e0;
+            border: 1px solid #999;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #d0d0d0;
+        }
+        
+        .button-row {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 13px;
+            margin: 20px 0 10px 0;
+            color: #333;
+        }
+        
+        .grid-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+            position: relative;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        /* 捲軸樣式 */
+        .grid-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        
+        .grid-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        table {
+            border-collapse: collapse;
+            font-size: 11px;
+            min-width: 1200px;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-weight: normal;
+            color: #555;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        
+        th:hover {
+            background-color: #e8e8e8;
+        }
+        
+        /* 排序箭頭樣式 */
+        th.sortable::after {
+            content: ' ↕';
+            color: #999;
+            font-size: 10px;
+        }
+        
+        th.sort-asc::after {
+            content: ' ↑';
+            color: #333;
+            font-size: 10px;
+        }
+        
+        th.sort-desc::after {
+            content: ' ↓';
+            color: #333;
+            font-size: 10px;
+        }
+        
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* 特定欄位寬度設定 */
+        th:nth-child(1), td:nth-child(1) { min-width: 80px; }
+        th:nth-child(2), td:nth-child(2) { min-width: 150px; }
+        th:nth-child(3), td:nth-child(3) { min-width: 100px; }
+        th:nth-child(4), td:nth-child(4) { min-width: 80px; }
+        th:nth-child(5), td:nth-child(5) { min-width: 90px; }
+        th:nth-child(6), td:nth-child(6) { min-width: 100px; }
+        th:nth-child(7), td:nth-child(7) { min-width: 70px; }
+        th:nth-child(8), td:nth-child(8) { min-width: 60px; }
+        th:nth-child(9), td:nth-child(9) { min-width: 80px; }
+        th:nth-child(10), td:nth-child(10) { min-width: 120px; }
+        th:nth-child(11), td:nth-child(11) { min-width: 80px; }
+        th:nth-child(12), td:nth-child(12) { min-width: 70px; }
+        th:nth-child(13), td:nth-child(13) { min-width: 150px; }
+        
+        .info-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        
+        .info-box ol {
+            margin-left: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* 移除捲動提示相關樣式 */
+        
+        /* 保持4欄佈局 - 不改變欄數 */
+        .container {
+            min-width: 800px; /* 設定最小寬度，確保4欄不會太擠 */
+        }
+        
+        /* 當視窗太小時，出現水平捲軸 */
+        @media (max-width: 850px) {
+            body {
+                overflow-x: auto;
+            }
+        }
+        
+        /* 調整標籤寬度以適應較小螢幕 */
+        @media (max-width: 1200px) {
+            .form-group {
+                grid-template-columns: 80px 1fr;
+            }
+            
+            label {
+                font-size: 11px;
+            }
+            
+            input[type="text"], 
+            textarea {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            .form-group {
+                grid-template-columns: 70px 1fr;
+                gap: 4px;
+            }
+            
+            .form-row {
+                gap: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>刷卡紀錄</h1>
+        
+        <div class="button-row">
+            <button onclick="querySPDHByCard()">SPDH-以卡號查詢</button>
+            <button onclick="queryOAAA()">OAAA</button>
+            <button onclick="querySPDH()">SPDH</button>
+        </div>
+        
+        <!-- 基本資料區 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>主卡ID</label>
+                <input type="text" value="1234567890123456" />
+            </div>
+            <div class="form-group">
+                <label>附卡ID</label>
+                <input type="text" value="9876543210" />
+            </div>
+            <div class="form-group">
+                <label></label>
+                <span></span>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <span></span>
+            </div>
+        </div>
+        
+        <!-- 帳單資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>結帳日期</label>
+                <input type="text" value="2024/12/25" />
+            </div>
+            <div class="form-group">
+                <label>總應繳款</label>
+                <input type="text" value="35,500" />
+            </div>
+            <div class="form-group">
+                <label>本期最低應繳</label>
+                <input type="text" value="3,550" />
+            </div>
+            <div class="form-group">
+                <label>繳款評等</label>
+                <input type="text" value="正常繳款" />
+            </div>
+        </div>
+        
+        <!-- 繳款資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>繳款截止日</label>
+                <input type="text" value="2025/01/10" />
+            </div>
+            <div class="form-group">
+                <label>最近繳款日期</label>
+                <input type="text" value="2024/12/20" />
+            </div>
+            <div class="form-group">
+                <label>最近繳款金額</label>
+                <input type="text" value="30,000" />
+            </div>
+            <div class="form-group">
+                <label></label>
+                <span></span>
+            </div>
+        </div>
+        
+        <!-- 卡片資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>開卡日</label>
+                <input type="text" value="2022/03/15" />
+            </div>
+            <div class="form-group">
+                <label>有效期限</label>
+                <input type="text" value="2027/03" />
+            </div>
+            <div class="form-group">
+                <label>現況碼</label>
+                <input type="text" value="00" />
+            </div>
+            <div class="form-group">
+                <label>現況日期</label>
+                <input type="text" value="2024/12/25" />
+            </div>
+        </div>
+        
+        <!-- 狀態資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>狀態日</label>
+                <input type="text" value="2024/12/01" />
+            </div>
+            <div class="form-group">
+                <label>BLOCK CDE</label>
+                <input type="text" value="N" />
+            </div>
+            <div class="form-group">
+                <label>原因碼1</label>
+                <input type="text" value="" />
+            </div>
+            <div class="form-group">
+                <label>原因碼2</label>
+                <input type="text" value="" />
+            </div>
+        </div>
+        
+        <!-- 額度資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>臨調額度</label>
+                <input type="text" value="0" />
+            </div>
+            <div class="form-group">
+                <label>臨調期間</label>
+                <input type="text" value="" />
+            </div>
+            <div class="form-group">
+                <label>臨調原因</label>
+                <input type="text" value="" />
+            </div>
+            <div class="form-group">
+                <label>臨調區域</label>
+                <input type="text" value="" />
+            </div>
+        </div>
+        
+        <!-- 信用資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>固定額度</label>
+                <input type="text" value="200,000" />
+            </div>
+            <div class="form-group">
+                <label>可用餘額</label>
+                <input type="text" value="164,500" />
+            </div>
+            <div class="form-group">
+                <label>已授權數</label>
+                <input type="text" value="2" />
+            </div>
+            <div class="form-group">
+                <label>已授權金額</label>
+                <input type="text" value="5,500" />
+            </div>
+        </div>
+        
+        <!-- 備註 -->
+        <div class="form-row">
+            <div class="form-group col-span-3">
+                <label>備註</label>
+                <textarea readonly>VIP客戶</textarea>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <button onclick="updateRemark()" class="hidden">備註更新</button>
+            </div>
+        </div>
+        
+        <!-- 消費明細 Grid -->
+        <div id="oaaaSection">
+            <div class="section-title">消費明細 OAAA</div>
+            <div class="grid-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-column="0" data-type="text">行動裝置</th>
+                            <th class="sortable" data-column="1" data-type="text">卡號</th>
+                            <th class="sortable" data-column="2" data-type="date">交易日期</th>
+                            <th class="sortable" data-column="3" data-type="time">交易時間</th>
+                            <th class="sortable" data-column="4" data-type="number">交易金額</th>
+                            <th class="sortable" data-column="5" data-type="text">REQUEST</th>
+                            <th class="sortable" data-column="6" data-type="text">行業別</th>
+                            <th class="sortable" data-column="7" data-type="text">國碼</th>
+                            <th class="sortable" data-column="8" data-type="text">BIN ICA</th>
+                            <th class="sortable" data-column="9" data-type="text">RESPONSE</th>
+                            <th class="sortable" data-column="10" data-type="text">REV CODE</th>
+                            <th class="sortable" data-column="11" data-type="text">ECREQ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="oaaaTableBody">
+                        <!-- 資料將由 JavaScript 動態產生 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- SPDH Grid (預設隱藏) -->
+        <div id="spdhSection" class="hidden">
+            <div class="section-title">授權查詢 SPDH</div>
+            <div class="grid-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-column="0" data-type="text">行動裝置</th>
+                            <th class="sortable" data-column="1" data-type="text">卡號</th>
+                            <th class="sortable" data-column="2" data-type="date">交易日期</th>
+                            <th class="sortable" data-column="3" data-type="time">交易時間</th>
+                            <th class="sortable" data-column="4" data-type="number">交易金額</th>
+                            <th class="sortable" data-column="5" data-type="text">REQUEST</th>
+                            <th class="sortable" data-column="6" data-type="text">行業別</th>
+                            <th class="sortable" data-column="7" data-type="text">國碼</th>
+                            <th class="sortable" data-column="8" data-type="text">RESPONSE</th>
+                            <th class="sortable" data-column="9" data-type="text">BIN/ICA</th>
+                            <th class="sortable" data-column="10" data-type="text">REV CODE</th>
+                            <th class="sortable" data-column="11" data-type="text">授權人員</th>
+                            <th class="sortable" data-column="12" data-type="text">MEMO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spdhTableBody">
+                        <!-- 資料將由 JavaScript 動態產生 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 說明資訊 -->
+        <div class="info-box">
+            <ol>
+                <li>臨時調高度額度不得進行預借現金</li>
+                <li>授權依特約商店種類設定日限次日限額，超過限額時會請特約商店照會銀行，此項行為是為"保護持卡人避免偽冒"</li>
+                <li>若查不到刷卡被拒紀錄，可能為特約商店連線失敗亦或磁卡失磁</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // 模擬資料
+        const mockOAAAData = [
+            {
+                device: 'N',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/24',
+                time: '15:30:45',
+                amount: '3,500',
+                request: 'AUTH',
+                industry: '5411',
+                country: 'TW',
+                binIca: '123456',
+                response: 'APPROVED',
+                revCode: '00',
+                ecreq: 'Y'
+            },
+            {
+                device: 'N',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/23',
+                time: '10:15:22',
+                amount: '1,200',
+                request: 'AUTH',
+                industry: '5812',
+                country: 'TW',
+                binIca: '123456',
+                response: 'APPROVED',
+                revCode: '00',
+                ecreq: 'Y'
+            },
+            {
+                device: 'Y',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/22',
+                time: '18:45:10',
+                amount: '15,800',
+                request: 'AUTH',
+                industry: '5999',
+                country: 'JP',
+                binIca: '123456',
+                response: 'APPROVED',
+                revCode: '00',
+                ecreq: 'Y'
+            },
+            {
+                device: 'N',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/21',
+                time: '09:20:33',
+                amount: '6,200',
+                request: 'AUTH',
+                industry: '5941',
+                country: 'TW',
+                binIca: '123456',
+                response: 'APPROVED',
+                revCode: '00',
+                ecreq: 'Y'
+            },
+            {
+                device: 'N',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/20',
+                time: '14:55:18',
+                amount: '2,800',
+                request: 'AUTH',
+                industry: '5814',
+                country: 'TW',
+                binIca: '123456',
+                response: 'APPROVED',
+                revCode: '00',
+                ecreq: 'Y'
+            }
+        ];
+        
+        const mockSPDHData = [
+            {
+                device: 'N',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/24',
+                time: '14:20:30',
+                amount: '2,500',
+                request: 'CVV',
+                industry: '5411',
+                country: 'TW',
+                response: 'PENDING',
+                binIca: '123456',
+                revCode: '01',
+                authPerson: 'A001',
+                memo: '授權中'
+            },
+            {
+                device: 'Y',
+                cardNo: '1234-5678-9012-3456',
+                date: '2024/12/23',
+                time: '16:20:45',
+                amount: '25,000',
+                request: 'CVV2',
+                industry: '5812',
+                country: 'US',
+                response: 'CALL CENTER',
+                binIca: '123457',
+                revCode: '002',
+                authPerson: 'A002',
+                memo: '超過單筆限額'
+            }
+        ];
+        
+        // 載入 OAAA 資料
+        function loadOAAAData() {
+            const tbody = document.getElementById('oaaaTableBody');
+            tbody.innerHTML = '';
+            
+            mockOAAAData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.device}</td>
+                    <td>${row.cardNo}</td>
+                    <td>${row.date}</td>
+                    <td>${row.time}</td>
+                    <td>${row.amount}</td>
+                    <td>${row.request}</td>
+                    <td>${row.industry}</td>
+                    <td>${row.country}</td>
+                    <td>${row.binIca}</td>
+                    <td>${row.response}</td>
+                    <td>${row.revCode}</td>
+                    <td>${row.ecreq}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 載入 SPDH 資料
+        function loadSPDHData() {
+            const tbody = document.getElementById('spdhTableBody');
+            tbody.innerHTML = '';
+            
+            mockSPDHData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.device}</td>
+                    <td>${row.cardNo}</td>
+                    <td>${row.date}</td>
+                    <td>${row.time}</td>
+                    <td>${row.amount}</td>
+                    <td>${row.request}</td>
+                    <td>${row.industry}</td>
+                    <td>${row.country}</td>
+                    <td>${row.response}</td>
+                    <td>${row.binIca}</td>
+                    <td>${row.revCode}</td>
+                    <td>${row.authPerson}</td>
+                    <td>${row.memo}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function querySPDHByCard() {
+            const cardNo = prompt('請輸入卡號：');
+            if (cardNo) {
+                alert('以卡號 ' + cardNo + ' 查詢 SPDH');
+                document.getElementById('spdhSection').classList.remove('hidden');
+                document.getElementById('oaaaSection').classList.add('hidden');
+                loadSPDHData(); // 載入 SPDH 資料
+            }
+        }
+        
+        function queryOAAA() {
+            alert('查詢 OAAA 消費明細');
+            document.getElementById('oaaaSection').classList.remove('hidden');
+            document.getElementById('spdhSection').classList.add('hidden');
+            loadOAAAData(); // 重新載入 OAAA 資料
+        }
+        
+        function querySPDH() {
+            alert('查詢 SPDH 授權記錄');
+            document.getElementById('spdhSection').classList.remove('hidden');
+            document.getElementById('oaaaSection').classList.add('hidden');
+            loadSPDHData(); // 載入 SPDH 資料
+        }
+        
+        function updateRemark() {
+            const textarea = document.querySelector('textarea');
+            if (textarea.readOnly) {
+                textarea.readOnly = false;
+                textarea.focus();
+            } else {
+                textarea.readOnly = true;
+                alert('備註已更新');
+            }
+        }
+        
+        // 表格排序功能
+        function initTableSort() {
+            const tables = document.querySelectorAll('table');
+            
+            tables.forEach(table => {
+                const headers = table.querySelectorAll('th.sortable');
+                let currentSort = { column: -1, direction: 'asc' };
+                
+                headers.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const column = parseInt(this.dataset.column);
+                        const type = this.dataset.type;
+                        const tbody = table.querySelector('tbody');
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        
+                        // 決定排序方向
+                        let direction = 'asc';
+                        if (currentSort.column === column && currentSort.direction === 'asc') {
+                            direction = 'desc';
+                        }
+                        
+                        // 更新排序狀態
+                        currentSort.column = column;
+                        currentSort.direction = direction;
+                        
+                        // 更新標頭樣式
+                        headers.forEach(h => {
+                            h.classList.remove('sort-asc', 'sort-desc');
+                        });
+                        this.classList.add(direction === 'asc' ? 'sort-asc' : 'sort-desc');
+                        
+                        // 排序邏輯
+                        rows.sort((a, b) => {
+                            const aValue = a.cells[column].textContent.trim();
+                            const bValue = b.cells[column].textContent.trim();
+                            
+                            let comparison = 0;
+                            
+                            switch(type) {
+                                case 'number':
+                                    const aNum = parseFloat(aValue.replace(/,/g, ''));
+                                    const bNum = parseFloat(bValue.replace(/,/g, ''));
+                                    comparison = aNum - bNum;
+                                    break;
+                                    
+                                case 'date':
+                                    const aDate = new Date(aValue);
+                                    const bDate = new Date(bValue);
+                                    comparison = aDate - bDate;
+                                    break;
+                                    
+                                case 'time':
+                                    const aTime = aValue.split(':').map(Number);
+                                    const bTime = bValue.split(':').map(Number);
+                                    comparison = (aTime[0] * 3600 + aTime[1] * 60 + aTime[2]) - 
+                                               (bTime[0] * 3600 + bTime[1] * 60 + bTime[2]);
+                                    break;
+                                    
+                                default: // text
+                                    comparison = aValue.localeCompare(bValue, 'zh-TW');
+                            }
+                            
+                            return direction === 'asc' ? comparison : -comparison;
+                        });
+                        
+                        // 重新插入排序後的行
+                        rows.forEach(row => tbody.appendChild(row));
+                    });
+                });
+            });
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 載入初始資料
+            loadOAAAData();
+            
+            // 原有的功能
+            document.querySelectorAll('table').forEach(table => {
+                table.addEventListener('dblclick', function(e) {
+                    if (e.target.tagName === 'TD') {
+                        const row = e.target.parentElement;
+                        const rowData = Array.from(row.cells).map(cell => cell.textContent);
+                        alert('您點擊了第 ' + row.rowIndex + ' 行的資料\n卡號：' + rowData[1] + '\n金額：' + rowData[4]);
+                    }
+                });
+            });
+            
+            // 初始化排序功能
+            initTableSort();
+        });
+    </script>
+</body>
+</html>

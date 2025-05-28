@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刷卡紀錄</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .form-container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        /* 按鈕區域 */
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        
+        .button-row button {
+            padding: 8px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            min-width: 120px;
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+        }
+        
+        .button-row button:hover {
+            background-color: #e8e8e8;
+        }
+        
+        /* 表單區域 - 固定四欄 */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        
+        .form-group label {
+            font-weight: normal;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+            min-width: 90px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .form-group input[type="text"] {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 6px 8px;
+            font-size: 14px;
+            height: 28px;
+            min-width: 0;
+        }
+        
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        /* 備註欄位 - 跨三欄 */
+        .remark-group {
+            grid-column: span 3;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .remark-group input {
+            flex: 1;
+        }
+        
+        .remark-button {
+            grid-column: 4;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        /* 空白佔位欄位 */
+        .empty-group {
+            visibility: hidden;
+        }
+        
+        /* 內容區域 - 可捲動 */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        /* Grid 表格 */
+        .grid-section {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 200px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+            flex-shrink: 0;
+        }
+        
+        .grid-container {
+            width: 100%;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            flex: 1;
+            min-height: 150px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 1200px;
+        }
+        
+        th {
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: normal;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            border-bottom: 1px solid #eee;
+            padding: 8px 10px;
+            white-space: nowrap;
+        }
+        
+        tr:hover {
+            background-color: #f5f8ff;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 注意事項 */
+        .notice-box {
+            border: 1px solid #ddd;
+            background-color: #f8f8f8;
+            padding: 12px 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        
+        .notice-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .notice-box li {
+            margin-bottom: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* 防止視窗過小時破版 */
+        @media screen and (max-width: 1400px) {
+            .form-container {
+                min-width: 1400px;
+            }
+            
+            body {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <!-- 按鈕列 -->
+        <div class="button-row">
+            <button onclick="querySPDHByCard()">SPDH-以卡號查詢</button>
+            <button onclick="queryOAAA()">OAAA</button>
+            <button onclick="querySPDH()">SPDH</button>
+        </div>
+        
+        <!-- 表單區域 - 嚴格四欄設計 -->
+        <div class="form-grid">
+            <!-- 第一行：主卡ID、附卡ID、空白、空白 -->
+            <div class="form-group">
+                <label>主卡ID</label>
+                <input type="text" value="1234567890123456">
+            </div>
+            <div class="form-group">
+                <label>附卡ID</label>
+                <input type="text" value="9876543210">
+            </div>
+            <div class="form-group empty">
+                <label>&nbsp;</label>
+                <input type="text">
+            </div>
+            <div class="form-group empty">
+                <label>&nbsp;</label>
+                <input type="text">
+            </div>
+            
+            <!-- 第二行：結帳日期、總應繳款、本期最低應繳、繳款評等 -->
+            <div class="form-group">
+                <label>結帳日期</label>
+                <input type="text" value="2024/12/25">
+            </div>
+            <div class="form-group">
+                <label>總應繳款</label>
+                <input type="text" value="35,500">
+            </div>
+            <div class="form-group">
+                <label>本期最低應繳</label>
+                <input type="text" value="3,550">
+            </div>
+            <div class="form-group">
+                <label>繳款評等</label>
+                <input type="text" value="正常繳款">
+            </div>
+            
+            <!-- 第三行：繳款截止日、最近繳款日期、最近繳款金額、空白 -->
+            <div class="form-group">
+                <label>繳款截止日</label>
+                <input type="text" value="2025/01/10">
+            </div>
+            <div class="form-group">
+                <label>最近繳款日期</label>
+                <input type="text" value="2024/12/20">
+            </div>
+            <div class="form-group">
+                <label>最近繳款金額</label>
+                <input type="text" value="30,000">
+            </div>
+            <div class="form-group empty">
+                <label>&nbsp;</label>
+                <input type="text">
+            </div>
+            
+            <!-- 第四行：開卡日、有效期限、現況碼、現況日期 -->
+            <div class="form-group">
+                <label>開卡日</label>
+                <input type="text" value="2022/03/15">
+            </div>
+            <div class="form-group">
+                <label>有效期限</label>
+                <input type="text" value="2027/03">
+            </div>
+            <div class="form-group">
+                <label>現況碼</label>
+                <input type="text" value="00">
+            </div>
+            <div class="form-group">
+                <label>現況日期</label>
+                <input type="text" value="2024/12/25">
+            </div>
+            
+            <!-- 第五行：狀態日、BLOCK CDE、原因碼1、原因碼2 -->
+            <div class="form-group">
+                <label>狀態日</label>
+                <input type="text" value="2024/12/01">
+            </div>
+            <div class="form-group">
+                <label>BLOCK CDE</label>
+                <input type="text" value="N">
+            </div>
+            <div class="form-group">
+                <label>原因碼1</label>
+                <input type="text" value="">
+            </div>
+            <div class="form-group">
+                <label>原因碼2</label>
+                <input type="text" value="">
+            </div>
+            
+            <!-- 第六行：臨調額度、臨調期間、臨調原因、臨調區域 -->
+            <div class="form-group">
+                <label>臨調額度</label>
+                <input type="text" value="0">
+            </div>
+            <div class="form-group">
+                <label>臨調期間</label>
+                <input type="text" value="">
+            </div>
+            <div class="form-group">
+                <label>臨調原因</label>
+                <input type="text" value="">
+            </div>
+            <div class="form-group">
+                <label>臨調區域</label>
+                <input type="text" value="">
+            </div>
+            
+            <!-- 第七行：固定額度、可用餘額、已授權數、已授權金額 -->
+            <div class="form-group">
+                <label>固定額度</label>
+                <input type="text" value="200,000">
+            </div>
+            <div class="form-group">
+                <label>可用餘額</label>
+                <input type="text" value="164,500">
+            </div>
+            <div class="form-group">
+                <label>已授權數</label>
+                <input type="text" value="2">
+            </div>
+            <div class="form-group">
+                <label>已授權金額</label>
+                <input type="text" value="5,500">
+            </div>
+            
+            <!-- 備註行：備註（跨3欄）、備註更新按鈕 -->
+            <div class="remark-group">
+                <label style="min-width: 90px; text-align: right;">備註</label>
+                <input type="text" value="VIP客戶" readonly>
+            </div>
+            <div class="remark-button">
+                <button onclick="updateRemark()" class="hidden">備註更新</button>
+            </div>
+        </div>
+        
+        <!-- 可捲動內容區域 -->
+        <div class="content-area">
+            <!-- 消費明細 OAAA -->
+            <div class="grid-section" id="oaaaSection">
+                <div class="section-title">消費明細 OAAA</div>
+                <div class="grid-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>行動裝置</th>
+                                <th>卡號</th>
+                                <th>交易日期</th>
+                                <th>交易時間</th>
+                                <th>交易金額</th>
+                                <th>REQUEST</th>
+                                <th>行業別</th>
+                                <th>國碼</th>
+                                <th>BIN ICA</th>
+                                <th>RESPONSE</th>
+                                <th>REV CODE</th>
+                                <th>ECREQ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>N</td>
+                                <td>1234-5678-9012-3456</td>
+                                <td>2024/12/24</td>
+                                <td>15:30:45</td>
+                                <td>3,500</td>
+                                <td>AUTH</td>
+                                <td>5411</td>
+                                <td>TW</td>
+                                <td>123456</td>
+                                <td>APPROVED</td>
+                                <td>00</td>
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>N</td>
+                                <td>1234-5678-9012-3456</td>
+                                <td>2024/12/23</td>
+                                <td>10:15:22</td>
+                                <td>1,200</td>
+                                <td>AUTH</td>
+                                <td>5812</td>
+                                <td>TW</td>
+                                <td>123456</td>
+                                <td>APPROVED</td>
+                                <td>00</td>
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>Y</td>
+                                <td>1234-5678-9012-3456</td>
+                                <td>2024/12/22</td>
+                                <td>18:45:10</td>
+                                <td>15,800</td>
+                                <td>AUTH</td>
+                                <td>5999</td>
+                                <td>JP</td>
+                                <td>123456</td>
+                                <td>APPROVED</td>
+                                <td>00</td>
+                                <td>Y</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- SPDH 授權記錄（預設隱藏） -->
+            <div class="grid-section hidden" id="spdhSection">
+                <div class="section-title">SPDH 授權記錄</div>
+                <div class="grid-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>行動裝置</th>
+                                <th>卡號</th>
+                                <th>交易日期</th>
+                                <th>交易時間</th>
+                                <th>交易金額</th>
+                                <th>REQUEST</th>
+                                <th>行業別</th>
+                                <th>國碼</th>
+                                <th>RESPONSE</th>
+                                <th>BIN/ICA</th>
+                                <th>REV CODE</th>
+                                <th>授權人員</th>
+                                <th>MEMO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>N</td>
+                                <td>1234-5678-9012-3456</td>
+                                <td>2024/12/24</td>
+                                <td>14:20:30</td>
+                                <td>2,500</td>
+                                <td>CVV</td>
+                                <td>5411</td>
+                                <td>TW</td>
+                                <td>PENDING</td>
+                                <td>123456</td>
+                                <td>01</td>
+                                <td>A001</td>
+                                <td>授權中</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 注意事項 -->
+            <div class="notice-box">
+                <ul>
+                    <li>臨時調高度額度不得進行預借現金</li>
+                    <li>授權依特約商店種類設定日限次日限額，超過限額時會請特約商店照會銀行，此項行為是為"保護持卡人避免偽冒"</li>
+                    <li>若查不到刷卡被拒紀錄，可能為特約商店連線失敗亦或磁卡失磁</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function querySPDHByCard() {
+            const cardNo = prompt('請輸入卡號：');
+            if (cardNo) {
+                alert('以卡號 ' + cardNo + ' 查詢 SPDH');
+                document.getElementById('spdhSection').classList.remove('hidden');
+                document.getElementById('oaaaSection').classList.add('hidden');
+            }
+        }
+        
+        function queryOAAA() {
+            alert('查詢 OAAA 消費明細');
+            document.getElementById('oaaaSection').classList.remove('hidden');
+            document.getElementById('spdhSection').classList.add('hidden');
+        }
+        
+        function querySPDH() {
+            alert('查詢 SPDH 授權記錄');
+            document.getElementById('spdhSection').classList.remove('hidden');
+            document.getElementById('oaaaSection').classList.add('hidden');
+        }
+        
+        function updateRemark() {
+            const newRemark = prompt('請輸入新的備註：');
+            if (newRemark !== null) {
+                document.querySelector('.remark-group input').value = newRemark;
+                alert('備註已更新');
+            }
+        }
+        
+        document.querySelectorAll('tbody').forEach(tbody => {
+            tbody.addEventListener('dblclick', function(e) {
+                if (e.target.tagName === 'TD') {
+                    const row = e.target.parentNode;
+                    const rowData = Array.from(row.cells).map(cell => cell.textContent);
+                    const tableType = e.target.closest('.grid-section').querySelector('.section-title').textContent;
+                    alert(tableType + ' 明細：\n卡號：' + rowData[1] + '\n交易日期：' + rowData[2] + '\n金額：' + rowData[4]);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

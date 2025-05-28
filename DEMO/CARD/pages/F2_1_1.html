@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消費明細 - CardlinkCRM</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            font-size: 12px;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 850px;
+        }
+        
+        h1 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .form-group {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group.col-span-2 {
+            grid-column: span 2;
+        }
+        
+        .form-group.col-span-3 {
+            grid-column: span 3;
+        }
+        
+        .form-group.col-span-4 {
+            grid-column: span 4;
+        }
+        
+        label {
+            text-align: right;
+            color: #555;
+            font-weight: normal;
+            padding-right: 5px;
+        }
+        
+        input[type="text"], 
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            height: 22px;
+            resize: none;
+        }
+        
+        input[readonly] {
+            background-color: #f5f5f5;
+        }
+        
+        .highlight {
+            background-color: #ffc0c0;
+        }
+        
+        button {
+            padding: 6px 20px;
+            background-color: #e0e0e0;
+            border: 1px solid #999;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #d0d0d0;
+        }
+        
+        .button-row {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 13px;
+            margin: 20px 0 10px 0;
+            color: #333;
+        }
+        
+        .grid-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+            position: relative;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        /* 捲軸樣式 */
+        .grid-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        
+        .grid-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        table {
+            border-collapse: collapse;
+            font-size: 11px;
+            width: 100%;
+            table-layout: auto;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-weight: normal;
+            color: #555;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background-color: #e8e8e8;
+        }
+        
+        /* 排序箭頭樣式 */
+        th.sortable::after {
+            content: ' ↕';
+            color: #999;
+            font-size: 10px;
+        }
+        
+        th.sort-asc::after {
+            content: ' ↑';
+            color: #333;
+            font-size: 10px;
+        }
+        
+        th.sort-desc::after {
+            content: ' ↓';
+            color: #333;
+            font-size: 10px;
+        }
+        
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* 欄位寬度設定 - 根據內容自動調整 */
+        .checkbox-col {
+            width: 40px;
+            text-align: center;
+        }
+        
+        /* 消費日和入帳日 - 固定寬度 */
+        th:nth-child(2), td:nth-child(2),
+        th:nth-child(3), td:nth-child(3) {
+            width: 85px;
+        }
+        
+        /* 消費摘要 - 最大寬度，允許自動調整 */
+        th:nth-child(4), td:nth-child(4) {
+            width: auto;
+            min-width: 200px;
+            max-width: 350px;
+            white-space: normal;
+            word-break: break-word;
+        }
+        
+        /* 金額欄位 - 適中寬度 */
+        th:nth-child(5), td:nth-child(5) {
+            width: 80px;
+            text-align: right;
+        }
+        
+        /* 卡類和EMB - 較小寬度 */
+        th:nth-child(6), td:nth-child(6),
+        th:nth-child(7), td:nth-child(7) {
+            width: 50px;
+            text-align: center;
+        }
+        
+        /* 分期餘額 - 適中寬度 */
+        th:nth-child(8), td:nth-child(8) {
+            width: 80px;
+            text-align: right;
+        }
+        
+        /* 年利 - 較小寬度 */
+        th:nth-child(9), td:nth-child(9) {
+            width: 60px;
+            text-align: right;
+        }
+        
+        .info-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        
+        .info-box ol {
+            margin-left: 20px;
+        }
+        
+        .calculation-row {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        
+        .calculation-row input {
+            width: 71px;
+            text-align: right;
+            margin: 0 5px;
+        }
+        
+        .operator {
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1000px) {
+            body {
+                overflow-x: auto;
+            }
+            
+            .form-group {
+                grid-template-columns: 80px 1fr;
+                gap: 4px;
+            }
+            
+            .form-row {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>消費明細</h1>
+        
+        <div class="button-row">
+            <button onclick="queryBilling()">查詢</button>
+            <button onclick="updateRemark()">更新備註</button>
+        </div>
+        
+        <!-- 查詢條件 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>查詢月年</label>
+                <select onchange="onMonthChange()">
+                    <option>2024/01</option>
+                    <option>2024/02</option>
+                    <option>2024/03</option>
+                    <option selected>2024/04</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>歸戶ID</label>
+                <input type="text" value="A123456789" readonly />
+            </div>
+            <div class="form-group">
+                <label>結帳日期</label>
+                <input type="text" value="2024/04/20" readonly />
+            </div>
+            <div class="form-group">
+                <label>繳款評等</label>
+                <input type="text" value="A" readonly />
+            </div>
+        </div>
+        
+        <!-- 備註 -->
+        <div class="form-row">
+            <div class="form-group col-span-4">
+                <label>備註</label>
+                <textarea readonly>VIP客戶，請提供優質服務</textarea>
+            </div>
+        </div>
+        
+        <div class="section-title">帳單明細查詢</div>
+        
+        <!-- 紅利點數 -->
+        <div class="section-title">紅利點數</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>前年點數</label>
+                <input type="text" value="1,250" readonly />
+            </div>
+            <div class="form-group">
+                <label>去年點數</label>
+                <input type="text" value="3,580" readonly />
+            </div>
+            <div class="form-group">
+                <label>今年點數</label>
+                <input type="text" value="2,100" readonly />
+            </div>
+            <div class="form-group">
+                <label>本期新增</label>
+                <input type="text" value="450" readonly />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>活動調整點數</label>
+                <input type="text" value="0" readonly />
+            </div>
+            <div class="form-group">
+                <label>兌換點數</label>
+                <input type="text" value="500" readonly />
+            </div>
+            <div class="form-group">
+                <label>目前總點數</label>
+                <input type="text" value="6,880" readonly />
+            </div>
+            <div class="form-group">
+                <label></label>
+                <span></span>
+            </div>
+        </div>
+        
+        <!-- 消費明細 -->
+        <div class="section-title">消費明細</div>
+        
+        <!-- 繳款資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>繳款截止日</label>
+                <input type="text" value="2024/05/10" class="highlight" readonly />
+            </div>
+            <div class="form-group">
+                <label>自扣行庫</label>
+                <input type="text" value="822-永豐銀行" readonly />
+            </div>
+            <div class="form-group">
+                <label>自扣帳號</label>
+                <input type="text" value="1234567890123" readonly />
+            </div>
+            <div class="form-group">
+                <label>自扣生效日</label>
+                <input type="text" value="2023/01/15" readonly />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>自扣方式</label>
+                <input type="text" value="全額扣款" readonly />
+            </div>
+            <div class="form-group">
+                <label>利害關係人</label>
+                <input type="text" value="N" readonly />
+            </div>
+            <div class="form-group">
+                <label></label>
+                <button onclick="advancePayoff()">提前清償</button>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <button onclick="disputePayment()">爭議款</button>
+            </div>
+        </div>
+        
+        <!-- 金額計算 -->
+        <div class="calculation-row">
+            <label>上期餘額</label>
+            <input type="text" value="15,230" class="highlight" readonly />
+            <span class="operator">-</span>
+            
+            <label>繳款金額</label>
+            <input type="text" value="15,230" class="highlight" readonly />
+            <span class="operator">+</span>
+            
+            <label>本期帳款</label>
+            <input type="text" value="28,450" class="highlight" readonly />
+            <span class="operator">+</span>
+            
+            <label>其他款項</label>
+            <input type="text" value="0" class="highlight" readonly />
+            <span class="operator">+</span>
+            
+            <label>循環利息</label>
+            <input type="text" value="156" class="highlight" readonly />
+            <span class="operator">+</span>
+            
+            <label>違約金</label>
+            <input type="text" value="0" class="highlight" readonly />
+            <span class="operator">=</span>
+            
+            <label>本期應繳</label>
+            <input type="text" value="28,606" class="highlight" readonly />
+            
+            <label style="margin-left: 20px;">本期最低應繳總額</label>
+            <input type="text" value="1,430" class="highlight" readonly />
+        </div>
+        
+        <!-- 循環相關資訊 -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>未繳循環本金</label>
+                <input type="text" value="12,500" readonly />
+            </div>
+            <div class="form-group">
+                <label>循環利率</label>
+                <input type="text" value="15.00%" readonly />
+            </div>
+            <div class="form-group">
+                <label>繳清所需期數</label>
+                <input type="text" value="24" readonly />
+            </div>
+            <div class="form-group">
+                <label>應繳總額</label>
+                <input type="text" value="28,606" readonly />
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>當期利息</label>
+                <input type="text" value="156" readonly />
+            </div>
+            <div class="form-group">
+                <label>當期費用</label>
+                <input type="text" value="0" readonly />
+            </div>
+            <div class="form-group">
+                <label>本年累計利息</label>
+                <input type="text" value="580" readonly />
+            </div>
+            <div class="form-group">
+                <label>本年累計費用</label>
+                <input type="text" value="300" readonly />
+            </div>
+        </div>
+        
+        <!-- 消費明細 Grid -->
+        <div class="grid-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="checkbox-col">
+                            <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes()">
+                        </th>
+                        <th class="sortable" data-column="1" data-type="date">消費日</th>
+                        <th class="sortable" data-column="2" data-type="date">入帳日</th>
+                        <th class="sortable" data-column="3" data-type="text">消費摘要</th>
+                        <th class="sortable" data-column="4" data-type="number">台幣金額</th>
+                        <th class="sortable" data-column="5" data-type="text">卡類</th>
+                        <th class="sortable" data-column="6" data-type="text">EMB</th>
+                        <th class="sortable" data-column="7" data-type="number">分期餘額</th>
+                        <th class="sortable" data-column="8" data-type="number">年利</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody">
+                    <!-- 資料將由 JavaScript 動態產生 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 說明資訊 -->
+        <div class="info-box">
+            <ol>
+                <li>消費明細限本人查詢</li>
+                <li>如持卡人查詢應繳金額，且為自扣戶，請提醒持卡人何時應將繳款金額存入繳款帳戶</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // 模擬交易資料
+        const mockTransactionData = [
+            {
+                selected: false,
+                consumeDate: '2024/03/15',
+                postDate: '2024/03/18',
+                description: '全聯福利中心-台北信義店',
+                amount: '2,350',
+                cardType: 'VISA',
+                emb: 'Y',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/03/20',
+                postDate: '2024/03/22',
+                description: '台灣中油-忠孝東路站',
+                amount: '1,800',
+                cardType: 'VISA',
+                emb: 'Y',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/03/25',
+                postDate: '2024/03/27',
+                description: '好市多COSTCO-內湖店 (分期付款 3/12期)',
+                amount: '3,500',
+                cardType: 'VISA',
+                emb: 'Y',
+                installmentBalance: '35,000',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/04/01',
+                postDate: '2024/04/03',
+                description: '統一超商7-11-信義門市',
+                amount: '125',
+                cardType: 'VISA',
+                emb: 'Y',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/04/05',
+                postDate: '2024/04/08',
+                description: '遠東百貨-板橋中山店',
+                amount: '8,900',
+                cardType: 'VISA',
+                emb: 'Y',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/04/10',
+                postDate: '2024/04/12',
+                description: '網路購物-PCHOME線上購物',
+                amount: '3,775',
+                cardType: 'VISA',
+                emb: 'N',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/04/15',
+                postDate: '2024/04/17',
+                description: '台灣大哥大-月租費自動扣繳',
+                amount: '999',
+                cardType: 'VISA',
+                emb: 'N',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            },
+            {
+                selected: false,
+                consumeDate: '2024/04/18',
+                postDate: '2024/04/20',
+                description: '星巴克STARBUCKS-信義門市',
+                amount: '185',
+                cardType: 'VISA',
+                emb: 'Y',
+                installmentBalance: '0',
+                interestRate: '0.00%'
+            }
+        ];
+        
+        // 載入交易資料
+        function loadTransactionData() {
+            const tbody = document.getElementById('transactionTableBody');
+            tbody.innerHTML = '';
+            
+            mockTransactionData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="checkbox-col">
+                        <input type="checkbox" data-index="${index}" onchange="onCheckboxChange(${index})">
+                    </td>
+                    <td>${row.consumeDate}</td>
+                    <td>${row.postDate}</td>
+                    <td>${row.description}</td>
+                    <td>${row.amount}</td>
+                    <td>${row.cardType}</td>
+                    <td>${row.emb}</td>
+                    <td>${row.installmentBalance}</td>
+                    <td>${row.interestRate}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 全選/取消全選
+        function toggleAllCheckboxes() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+                const index = parseInt(checkbox.dataset.index);
+                mockTransactionData[index].selected = selectAll.checked;
+            });
+        }
+        
+        // 單一 checkbox 變更
+        function onCheckboxChange(index) {
+            mockTransactionData[index].selected = !mockTransactionData[index].selected;
+            
+            // 檢查是否全部勾選
+            const allChecked = mockTransactionData.every(item => item.selected);
+            document.getElementById('selectAll').checked = allChecked;
+        }
+        
+        // 查詢功能
+        function queryBilling() {
+            alert('正在查詢帳單明細...');
+            loadTransactionData();
+        }
+        
+        // 更新備註
+        function updateRemark() {
+            const textarea = document.querySelector('textarea');
+            if (textarea.readOnly) {
+                textarea.readOnly = false;
+                textarea.focus();
+                textarea.style.backgroundColor = '#fff';
+            } else {
+                textarea.readOnly = true;
+                textarea.style.backgroundColor = '#f5f5f5';
+                alert('備註已更新');
+            }
+        }
+        
+        // 提前清償
+        function advancePayoff() {
+            alert('提前清償功能');
+        }
+        
+        // 爭議款
+        function disputePayment() {
+            const selectedItems = mockTransactionData.filter(item => item.selected);
+            if (selectedItems.length === 0) {
+                alert('請先選擇要申請爭議的交易');
+            } else {
+                alert(`已選擇 ${selectedItems.length} 筆交易申請爭議款`);
+            }
+        }
+        
+        // 月份變更
+        function onMonthChange() {
+            const select = document.querySelector('select');
+            console.log('查詢月年變更為:', select.value);
+            queryBilling();
+        }
+        
+        // 表格排序功能
+        function initTableSort() {
+            const table = document.querySelector('table');
+            const headers = table.querySelectorAll('th.sortable');
+            let currentSort = { column: -1, direction: 'asc' };
+            
+            headers.forEach(header => {
+                header.addEventListener('click', function() {
+                    const column = parseInt(this.dataset.column);
+                    const type = this.dataset.type;
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    
+                    // 決定排序方向
+                    let direction = 'asc';
+                    if (currentSort.column === column && currentSort.direction === 'asc') {
+                        direction = 'desc';
+                    }
+                    
+                    // 更新排序狀態
+                    currentSort.column = column;
+                    currentSort.direction = direction;
+                    
+                    // 更新標頭樣式
+                    headers.forEach(h => {
+                        h.classList.remove('sort-asc', 'sort-desc');
+                    });
+                    this.classList.add(direction === 'asc' ? 'sort-asc' : 'sort-desc');
+                    
+                    // 排序邏輯
+                    rows.sort((a, b) => {
+                        const aValue = a.cells[column].textContent.trim();
+                        const bValue = b.cells[column].textContent.trim();
+                        
+                        let comparison = 0;
+                        
+                        switch(type) {
+                            case 'number':
+                                const aNum = parseFloat(aValue.replace(/,/g, ''));
+                                const bNum = parseFloat(bValue.replace(/,/g, ''));
+                                comparison = aNum - bNum;
+                                break;
+                                
+                            case 'date':
+                                const aDate = new Date(aValue);
+                                const bDate = new Date(bValue);
+                                comparison = aDate - bDate;
+                                break;
+                                
+                            default: // text
+                                comparison = aValue.localeCompare(bValue, 'zh-TW');
+                        }
+                        
+                        return direction === 'asc' ? comparison : -comparison;
+                    });
+                    
+                    // 重新插入排序後的行
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
+        }
+        
+        // 雙擊行事件
+        function initRowDoubleClick() {
+            const table = document.querySelector('table');
+            table.addEventListener('dblclick', function(e) {
+                if (e.target.tagName === 'TD' && !e.target.classList.contains('checkbox-col')) {
+                    const row = e.target.parentElement;
+                    const cells = row.cells;
+                    const data = {
+                        consumeDate: cells[1].textContent,
+                        description: cells[3].textContent,
+                        amount: cells[4].textContent
+                    };
+                    alert(`交易詳情：\n\n消費日期：${data.consumeDate}\n消費摘要：${data.description}\n金額：${data.amount}`);
+                }
+            });
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 載入初始資料
+            loadTransactionData();
+            
+            // 初始化排序功能
+            initTableSort();
+            
+            // 初始化雙擊事件
+            initRowDoubleClick();
+        });
+    </script>
+</body>
+</html>
